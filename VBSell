@@ -1,0 +1,345 @@
+#F1::
+#+F12::
+
+coordmode, mouse, relative
+coordmode, pixel, relative
+
+liquidate:
+
+SetDefaultMouseSpeed , 0
+
+
+thefile = C:\Users\%A_UserName%\Downloads\caseyportfolio.csv
+fileread, Casey , %thefile%
+
+casey = ¤¤%casey%¤¤
+
+StringReplace, Casey , Casey , `n, ¤, All
+StringReplace, Casey , Casey , `r, ¤, All
+
+	WinActivate, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
+	
+
+
+	sendinput {home 5}{esc}^0
+	
+loop,
+{
+	winactivate, ahk_exe EXCEL.EXE
+	winwaitactive, ahk_exe EXCEL.EXE
+
+	clipboard =
+
+	loop, 20
+	{
+		sendinput {down}{ctrl down}c{ctrl up}
+		sleep 250
+		clipwait, 1
+		ifinstring, Clipboard , `,
+			Break
+		sleep 250
+		
+		if (a_index >= 20)
+			reload
+	}
+	
+	ifnotinstring, Clipboard , `,
+		return  
+	
+	if not clipboard 
+		reload
+	
+	ifinstring, Clipboard , 380038942
+		gosub liquidate		
+
+	
+	
+	ifinstring, Clipboard , -IB-`,
+		{
+			gosub IBsendsellorder ; reload 
+			gosub liquidate		
+		}
+		
+	
+	
+	StringReplace, clipboard , clipboard , `n, , All
+	StringReplace, clipboard , clipboard , `r,  , All
+			
+	StringSplit, orderdata, clipboard , `, , 
+	
+/*
+	longshort := regexreplace(orderdata1 , "(.*)0LONG", "")
+	longshort := regexreplace(longshort , "0SHORT(.*)", "")
+
+ longshort = SHORT
+ 
+	IfInString, longshort, LONG
+	{
+		msgbox ,,, LONG - exiting , 1
+		return ;====================================================================================================================================================================================================== 
+	}
+*/
+	;dollaramount := orderdata2
+	
+	account := orderdata1
+	shares :=  orderdata2 ;regexreplace(clipboard , ",(.*)", "")
+	thestock := regexreplace(orderdata3, "_" , "-" )
+	thelimit:= orderdata4
+
+	;msgbox shares %orderdata2% thestock %orderdata3% thelimit %orderdata4%
+	
+	if (shares = 0)
+		gosub liquidate
+		
+	;tooltip, %thestock% - %shares%, 520 , 285
+	
+	ifinstring, casey , ¤%thestock%¤
+	{
+		;tooltip, Casey Position`n`n%thestock%`n`n-%casey%- , 0 , 0 
+		tooltip, Casey Position`n`n%thestock%, 0 , 0 
+
+
+		;msgbox,,, %thestock% is Casey Position -%casey%- ,1
+		
+		gosub liquidate
+	}	
+	
+	
+	
+entersellorder:
+
+	WinMaximize  ,  Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
+	WinActivate, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
+	winwaitactive, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
+	
+	MouseClick, left, 1417 , 316 , 1
+	
+	
+	Loop, 20
+	{
+		if (a_index > 19)
+			gosub resendorder
+		
+		sendinput ^0
+
+		MouseClick, left, 97 , 214 , 3
+		
+		sendinput {ctrl down}a{ctrl up}^c
+		sleep 100
+		
+		ifinstring, clipboard, Account
+			break
+			
+		sendinput {home 5}{esc}
+		sleep 500
+	}
+	
+	
+	;947 , 348 , 0xCCCCCC
+	
+	;MouseClick, left, 902 , 345 , 1 ;616 , 232 , 1
+	
+
+	;MouseClick, left, 1047 , 304 , 1
+	;MouseClick, left, 1423 , 354 , 1
+	
+	MouseClick, left, 559 , 401 , 1
+	sendinput s{tab}
+	sleep 100
+	MouseClick, left, 596 , 325 , 3	
+
+	sendinput %thestock%{enter}
+	
+	MouseClick, left, 600 , 233 , 1
+	
+	tooltip , %account%
+	;sendinput {down 5}{up 1}{tab}
+	sleep 111
+	sendinput {up 10}
+	sleep 111
+	
+	send %account%{tab}
+	sleep 500
+	sendinput {tab}
+
+/*
+	Loop, 20
+	{
+		mouseclick, left, 1206 , 352 , 3
+		
+		;mouseclick, left, 1471 , 437 , 3
+
+		sendinput ^c
+		sleep 100
+
+		tooltip , %a_linenumber%
+		clipwait, 1
+
+		if clipboard
+			break
+	}
+*/
+	;msgbox %a_linenumber%
+	Loop, 200
+	{
+		if (a_index > 199)
+			gosub resendorder
+		
+		clipboard =
+		mouseclick, left, 1207 , 325 , 3
+		sendinput ^c
+		sleep 100
+
+		tooltip , %a_linenumber%
+		clipwait, 1
+
+		ifinstring, Clipboard, Bid Size
+			break
+		
+		ifinstring, Clipboard, Invalid symbol. Please check and try again.
+			gosub liquidate
+		
+		;mouseclick , left,  1218 , 356 , 1
+	}
+
+	StringReplace, clipboard , clipboard , `n, %a_space% , All
+
+	StringReplace, clipboard , clipboard , `r, %a_space% , All
+	StringReplace, clipboard , clipboard , `, , . , All
+
+	clipboard := regexreplace(clipboard , "Cours acheteur", "")
+	clipboard := regexreplace(clipboard , "Cours vendeur", "")
+	clipboard := regexreplace(clipboard , "Dernière", "")
+
+	clipboard := regexreplace(clipboard , "TransactionVolume(.*)", "")
+	clipboard := regexreplace(clipboard , "(.*)Bid", "")
+	StringReplace, clipboard , clipboard , %a_space%,  , All
+	StringReplace, clipboard , clipboard , s.o., 0 , All
+	
+	;msgbox %a_linenumber%clipboard`n`n%clipboard%
+	bid := regexreplace(clipboard , "Ask(.*)", "")
+	Ask := regexreplace(clipboard , "AskSize(.*)", "")
+	Ask := regexreplace(Ask , "(.*Ask)", "")
+	last := regexreplace(clipboard , "(.*)Last", "")
+
+	limit := thelimit
+
+	if (last >= thelimit and last <> "N/A")
+		limit := last
+
+	if (bid >= thelimit and bid <> "N/A")
+		limit := bid
+
+	;if (ask >= thelimit)
+		;limit := ask
+
+	;msgbox Ask: -%Ask%-`n`n Ask: -%Ask%-`n`n last: %last%`n`n thelimit: %thelimit% limit: %limit%
+
+	limit := regexreplace(limit , " (.*)","")
+
+	limit := round(1.05*limit,2)
+
+	;msgbox shares %orderdata2% thestock %orderdata3% limit %limit%
+
+	if (limit = 0 or not limit)
+		gosub liquidate
+
+	;shares := Floor(limit)
+
+	/*
+	shares := ceil(dollaramount / Limit)
+
+	if (shares < 1)
+	shares := 1
+	*/
+	;msgbox shares %shares% := dollaramount -%dollaramount%- / Limit -%Limit%-
+
+	MouseClick, left, 637 , 400 , 2
+	sendinput %shares%{tab}
+	sleep 100
+	
+	
+	sendinput %thestock%{tab 2}{up 4}{Down}
+	sleep 100
+	sendinput {tab}
+	MouseClick, left, 987 , 400 , 3
+
+	;GTC order
+	;sendinput %limit%{tab}{up 4}{down 1}
+	;Day order
+	sendinput %limit%{tab}{up 4}
+	sleep 100		
+	
+	Loop, 20 
+	{
+		if (a_index >19)
+			gosub resendorder
+		
+		mouseclick, left, 1292 , 325 , 1
+		sleep 500		
+		mouseclick, left, 1060 , 478 , 1
+
+		;mouseclick, left, 1632 , 434 , 1
+		;sleep 1000
+		
+		mousey = 650
+		;mousey = 850
+
+		clipboard =
+			sendinput {ctrl down}a{ctrl up}^c
+			sleep 100
+
+			tooltip , %a_linenumber%
+			clipwait, 1
+
+			ifinstring, Clipboard, A technical difficulty has been detected
+			{	
+				sendinput {esc}
+				mouseclick, left, 	1348 , 497 , 1
+			}
+			
+			ifinstring, Clipboard, Estimated Commission:$
+			{
+				ifnotinstring, Clipboard, Estimated Commission:Loading
+					{
+						ifnotinstring, Clipboard, ()
+							break
+					}
+			}
+
+			sleep 500
+	}
+	
+	;msgbox found
+
+	Loop, 15
+	{
+		mouseclick, left, 1036 , %mousey% ,1
+		;mouseclick, left, 1297 , %mousey% ,1
+		mousey := mousey + 20
+	}
+	sleep 500
+
+	;mouseclick, left, 1093 , 180 , 1
+
+	IfWinExist, dashboard.virtualbrokers.com says ahk_class MozillaWindowClass ahk_exe firefox.exe
+		{
+			winactivate, dashboard.virtualbrokers.com says ahk_class MozillaWindowClass ahk_exe firefox.exe
+			winwaitactive, dashboard.virtualbrokers.com says ahk_class MozillaWindowClass ahk_exe firefox.exe
+			sendinput {enter}
+			sleep 100
+		}
+
+	mousey = 430
+	Loop, 5
+	{
+		sendinput {esc}
+		sleep 100
+		;mouseclick, left, 1275 , %mousey% ,1
+		;mousey := mousey + 20
+	}
+
+	tooltip
+}
+
+return ;====================================================================================================================================================================================================== 
