@@ -1,0 +1,95 @@
+spyoptionsdl:
+coordmode, tooltip, screen
+;async
+
+ ;  'https://query1.finance.yahoo.com/v7/finance/options/A
+   
+   thefile = c:\users\%A_UserName%\Downloads\test.txt
+   ;UrlDownloadToFile, https://query1.finance.yahoo.com/v7/finance/options/SPY , %thefile%
+   
+   
+   whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+
+TheRequest =  https://query1.finance.yahoo.com/v7/finance/options/SPY 
+whr.Open("GET", TheRequest, true)
+whr.Send()
+
+try whr.WaitForResponse()
+TheExp := whr.ResponseText
+
+
+   ;fileread, TheExp, %thefile%
+   
+	StringReplace, TheExp , TheExp , " , ', All ;"
+    ;thedata := RegExReplace( thedata , "(.*)'expirationDates':[" , "") 
+	TheExp := RegExReplace( TheExp , "(.*)'expirationDates':." , "") 
+	
+	TheExp := RegExReplace( TheExp , "](.*)" , "") 
+   
+  ; msgbox %TheExp%
+   
+   
+;StringSplit, TheData, TheData , "expiration": , 
+;msgbox %TheData1% 
+
+
+StringReplace, TheData , TheData , expiration , ¤, All
+ 
+Loop, Parse, TheExp,  `, , 
+{
+	tooltip , SPY options send %a_loopfield% , 0 , 0
+	
+	whr%a_loopfield% := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+
+	TheRequest =  https://query1.finance.yahoo.com/v7/finance/options/SPY?date=%a_loopfield%
+	whr%a_loopfield%.Open("GET", TheRequest, true)
+	whr%a_loopfield%.Send()
+}
+
+Loop, Parse, TheExp,  `, , 
+{
+	tooltip , SPY options receive %a_loopfield% , 0 , 0
+	try whr%a_loopfield%.WaitForResponse()
+	TheData := whr%a_loopfield%.ResponseText
+
+	;msgbox %TheData%  
+	
+	AllData = %AllData%`n%thedata%
+}
+
+FormatTime , TimeString , %a_now% , yyyy-MM-dd_HH'h'mm'm
+thefile =  c:\users\%A_UserName%\Downloads\options SPY %TimeString%.csv
+
+filedelete ,%thefile%
+fileappend, %AllData%, %thefile%
+
+fileread, AllData, %thefile%
+
+tooltip
+;msgbox %AllData%  
+
+return
+
+
+spyoptionscheck:
+settimer, killexcelpopup, off
+CoordMode, pixel, screen
+
+FormatTime , TheMinutes , %a_now% , mm
+FormatTime , Thehours , %a_now% , Hmm
+
+	;msgbox %Thehours%
+
+if (Thehours >= 915 and thehours <= 1615)
+		{
+			if  ( theminutes = "00" or theminutes = "15" or theminutes = "30" or theminutes = "45" ) 
+			{
+				gosub spyoptionsdl
+				;msgbox DL
+			}
+		}
+	
+settimer, spyoptionscheck, 20000
+
+
+return
