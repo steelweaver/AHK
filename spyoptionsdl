@@ -75,12 +75,16 @@ spyoptionscheck:
 settimer, killexcelpopup, off
 CoordMode, pixel, screen
 
-FormatTime , TheMinutes , %a_now% , mm
-FormatTime , Thehours , %a_now% , Hmm
+FormatTime , TheWeekday, %a_now% , ddd
 
-	;msgbox %Thehours%
+if (TheWeekday <> "sat" and TheWeekday <> "sun" )
+{
+	FormatTime , TheMinutes , %a_now% , mm
+	FormatTime , Thehours , %a_now% , Hmm
 
-if (Thehours >= 915 and thehours <= 1615)
+		;msgbox %Thehours%
+
+	if (Thehours >= 915 and thehours <= 1615)
 		{
 			if  ( theminutes = "00" or theminutes = "15" or theminutes = "30" or theminutes = "45" ) 
 			{
@@ -88,6 +92,7 @@ if (Thehours >= 915 and thehours <= 1615)
 				;msgbox DL
 			}
 		}
+}
 	
 settimer, spyoptionscheck, 20000
 
