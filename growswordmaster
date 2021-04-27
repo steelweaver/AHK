@@ -1,0 +1,78 @@
+^!F12::
+
+
+subgrowswordmaster:
+wintitle = SM-T380 ahk_class SDL_app
+ifwinnotexist, %wintitle%
+{
+	run, C:\Users\MAIN\Documents\scrcpy-win64-v1.17\scrcpy.exe
+}
+
+winwait, %wintitle% , , 10
+
+loop, 
+{
+
+coordmode, mouse, relative
+coordmode, pixel, relative
+coordmode, tooltip, relative
+
+
+ifwinnotexist, %wintitle%
+{
+tooltip
+	return
+}
+	;WinMove, %wintitle% , , 1, 1 , 1142, 697
+	;WinMove, %wintitle% , , 1, 1 , 761, 465
+	winactivate, %wintitle% ;ahk_class LDPlayerMainFrame
+	winwaitactive, %wintitle% ;ahk_class LDPlayerMainFrame
+
+	WinGetActiveStats, winTitle, winWidth, winHeight, winX, winY
+	
+
+	;mouseclick, left , 298 , 492, 1
+	sleep 100
+	SetDefaultMouseSpeed, 2
+	MouseClickDrag, Left,  298 , 492 , 298 , 392
+	
+	;SendEvent {Click 298 492 Down}{Click 298 392 Up}
+	
+	SetDefaultMouseSpeed, 0
+	/*
+	mousex := 100
+	loop, 10
+	{
+		mouseclick, left , %mousex% , 860 , 1
+		mousex := mousex + 50
+	}
+	*/
+		loop, %scriptdrive%\Jonathan\Autohotkey\\growswordmaster\*.png
+		{
+		tooltip, ImageSearch %a_index% %A_LoopFileFullPath%, 0, 0
+		mousemove, 0 , 0
+			{
+
+				;msgbox ,,, %A_LoopFileFullPath%, 1s
+				;ImageSearch, FoundX, FoundY, 0, 0, %winWidth%, %winHeight%, *50 *TransBlack %A_LoopFileFullPath%
+				ImageSearch, FoundX, FoundY, 0, 0, %winWidth%, %winHeight%, *50 *TransBlack %A_LoopFileFullPath%
+				if (ErrorLevel = 2)
+					1=1 ;MsgBox Could not conduct the search.
+				else if (ErrorLevel = 1)
+					1=1 ;MsgBox Icon could not be found on the screen.
+				else
+					{
+
+						mouseclick, left , %FoundX% , %FoundY%, 11
+						sleep 100
+						
+						;msgbox ,,, %A_LoopFileFullPath%
+					}
+				;sleep 100
+			}
+	}
+}
+	
+
+
+return
