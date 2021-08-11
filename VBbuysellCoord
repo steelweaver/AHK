@@ -1,0 +1,819 @@
+#F1::
+#+F12::
+
+coordmode, mouse, relative
+coordmode, pixel, relative
+
+VBliquidate:
+
+SetDefaultMouseSpeed , 0
+
+
+thefile = C:\Users\%A_UserName%\Downloads\caseyportfolio.csv
+fileread, Casey , %thefile%
+
+casey = ¤¤%casey%¤¤
+
+StringReplace, Casey , Casey , `n, ¤, All
+StringReplace, Casey , Casey , `r, ¤, All
+
+	;WinActivate, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
+
+
+	winactivate, EXIT ahk_exe EXCEL.EXE
+	winwaitactive, ahk_exe EXCEL.EXE
+	
+	ifwinexist  , Microsoft Excel ahk_class #32770 ,  Cannot open the Clipboard
+		{
+			winactivate, Microsoft Excel ahk_class #32770 , Cannot open the Clipboard
+			controlClick, OK , Microsoft Excel ahk_class #32770, Cannot open the Clipboard
+			winkill, Microsoft Excel ahk_class #32770, Cannot open the Clipboard
+			sendinput {esc}
+			sendinput {enter}
+		}
+	
+	;sendinput {up}		
+	sendinput {down}
+		
+	clipboard =
+
+	loop, 20
+	{	
+		Clipboard := ""
+		While (Clipboard != "")
+		Sleep, 10
+		
+		ifwinexist  ,  Microsoft Excel ,  free up space
+			ControlSend , Button1, {esc},   Microsoft Excel ,  free up space
+		
+		sleep 100
+		
+		sendinput {ctrl down}c{ctrl up}
+		sleep 250
+		clipwait, 1
+		ifinstring, Clipboard , `,
+			Break
+		sleep 250
+
+		ifwinexist  , Microsoft Excel ahk_class #32770 ,  Cannot open the Clipboard
+		{
+			winactivate, Microsoft Excel ahk_class #32770 , Cannot open the Clipboard
+			controlClick, OK , Microsoft Excel ahk_class #32770, Cannot open the Clipboard
+			winkill, Microsoft Excel ahk_class #32770, Cannot open the Clipboard
+			sendinput {esc}
+			sendinput {enter}
+		}
+		
+		
+		if (a_index >= 20)
+			gosub restartscript
+	}
+	
+	ifnotinstring, Clipboard , `,
+		return  
+	
+	if not clipboard 
+		gosub restartscript
+	
+	ifinstring, Clipboard , 380038942
+		gosub VBliquidate		
+
+	
+	
+	ifinstring, Clipboard , -IB-`,
+		{
+			;gosub IBsendsellorder ; reload 
+			gosub VBliquidate		
+		}
+	
+	StringReplace, clipboard , clipboard , `n, , All
+	StringReplace, clipboard , clipboard , `r,  , All
+			
+	StringSplit, orderdata, clipboard , `, , 
+	
+/*
+	longshort := regexreplace(orderdata1 , "(.*)0LONG", "")
+	longshort := regexreplace(longshort , "0SHORT(.*)", "")
+
+ longshort = SHORT
+ 
+	IfInString, longshort, LONG
+	{
+		msgbox ,,, LONG - exiting , 1
+		return ;====================================================================================================================================================================================================== 
+	}
+*/
+	;dollaramount := orderdata2
+	
+	account := orderdata1
+	shares :=  orderdata2 ;regexreplace(clipboard , ",(.*)", "")
+	thestock := regexreplace(orderdata3, "_" , "-" )
+	thelimit:= orderdata4
+
+	;msgbox shares %orderdata2% thestock %orderdata3% thelimit %orderdata4%
+	
+	if (shares = 0)
+		gosub VBliquidate
+		
+	;tooltip, %thestock% - %shares%, 520 , 285
+	
+	ifinstring, casey , ¤%thestock%¤
+	{
+		;tooltip, Casey Position`n`n%thestock%`n`n-%casey%- , 0 , 0 
+		tooltip, Casey Position`n`n%thestock%, 0 , 0 
+
+
+		;msgbox,,, %thestock% is Casey Position -%casey%- ,1
+		
+		gosub VBliquidate
+	}	
+	
+	
+	
+entersellorder:
+/*
+	WinMaximize  ,  Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
+	WinActivate, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
+	winwaitactive, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
+*/
+	
+
+SetTitleMatchMode, RegEx
+
+wintitle := "Virtual Brokers .*Microsoft.*Edge.*"
+wintitle :=  "Slimjet" ;ahk_class Slimjet_WidgetWin_1
+wintitle :=  "Virtual Brokers - Slimjet" ;ahk_class Slimjet_WidgetWin_1
+
+Winactivate, %wintitle% , ;Chrome Legacy Window ; , - Google Chrome
+winwaitactive , %wintitle% , ,3
+
+
+
+ifwinnotactive , %wintitle%
+	{
+		msgbox ,,, %a_linenumber%  %wintitle% , 1
+		gosub entersellorder
+
+	}
+	
+	sendinput {home 5}{esc}	
+
+
+;502 , 348 , 0xCCCCCC
+
+FoundX := 0 
+FoundY := 0
+
+PixelSearch, FoundX, FoundY, 0, 0, a_screenwidth, a_screenheight, 0x1D9D5F , , fast
+mousemove , %FoundX%, %FoundY%
+;msgbox  %FoundX%, %FoundY%
+PixelSearch, FoundX, FoundY, 0 , %FoundY%, a_screenwidth, a_screenheight, 0x222222, , fast
+mousemove , %FoundX%, %FoundY%
+;msgbox  %FoundX%, %FoundY%
+
+BaseX := FoundX 
+BaseY := FoundY
+
+BaseX := 500 
+BaseY := 350
+
+
+;561 , 347 , 0xFFFFFF
+TickerX := BaseX + 50
+TickerY := BaseY
+
+;1416 , 343 , 0xFDFFFE
+ResetX := BaseX + 900 
+ResetY := BaseY
+
+;1314 , 347 , 0x10038F
+sendorderX := BaseX + 800 
+sendorderY := BaseY
+
+;1039 , 551 , 0xFFFFFF
+confirmorderX := BaseX + 550
+confirmorderY := BaseY + 200
+
+
+
+	MouseClick, left, %ResetX% , %ResetY% , 1
+
+	Loop, 20
+	{
+		tooltip , %a_linenumber%
+
+		if (a_index > 19)
+			gosub entersellorder
+
+		sendinput ^0
+		sendinput {ctrl down}{home 5}{ctrl up}{esc}
+
+		MouseClick, left, %BaseX% , %BaseY% , 3
+		clipboard = 
+		sendinput {ctrl down}c{ctrl up}
+		clipwait, 0.5
+		sleep 100
+		
+		ifinstring ,  clipboard ,  Symbol:
+				break
+			
+		sleep 500
+	}
+
+			send {tab 2}sell
+			sleep 100
+			
+			send {tab}%shares%
+			sleep 100
+			
+			send {tab 3}limit
+			sleep 100
+			
+			send {tab 2}%thelimit%
+			sleep 100
+			
+			send {tab}day{tab}
+			sleep 100
+			
+			
+;msgbox Symbol: = %clipboard%
+	
+	loop, 20
+	{
+	
+		loop, 20
+		{
+			tooltip , %a_linenumber%
+
+			if (a_index > 19)
+				gosub entersellorder
+
+			clipboard =
+			MouseClick, left, %TickerX% , %TickerY% , 3
+			
+			sleep 100
+			send ^a{del}%thestock%{enter}^a^c
+			sleep 100
+			clipwait, 0.5
+			if (clipboard = thestock)
+					break
+
+			sleep 500			
+		}	
+
+		Thestring = Bid Size
+		loop, 20
+		{
+			tooltip , %a_linenumber% - %a_index%
+			if (a_index > 19)
+				gosub entersellorder
+				
+			;MouseClick, left, 700 , 405 , 3
+			MouseClick, left, %TickerX% , %TickerY% , 2
+
+			tooltip , %a_linenumber% - %a_index%
+			clipboard =
+			
+				MouseClick, left, %BaseX% , %BaseY% , 1
+				sendinput ^a^c
+					clipwait , 0.5
+					
+				ifinstring, clipboard , %Thestring%
+					break
+					
+					sleep 100
+
+		}
+		
+		MouseClick, left, %TickerX% , %TickerY% , 1
+		
+		StringReplace, clipboard , clipboard , `n, ¤ , All
+		StringReplace, clipboard , clipboard , `r, ¤ , All
+		StringReplace, clipboard , clipboard , `r`n, ¤, All
+		StringReplace, clipboard , clipboard , `n`r, ¤, All
+		StringReplace, clipboard , clipboard , %a_tab% , ¤, All
+		theask := RegExReplace( clipboard , "Ask Size(.*)" , "") 
+		theask := RegExReplace( theask , "(.*)Ask" , "") 	
+		thelast := RegExReplace( clipboard , "Transaction(.*)" , "") 
+		thelast:= RegExReplace( thelast , "(.*)Last" , "") 
+		thelast:= RegExReplace( thelast , "¤(.*)" , "") 
+		thelimit:= round(1.03*max( thelimit , thelast),2)
+			
+
+		;msgbox,,, thelast %thelast% thelimit %thelimit% ,1
+		send {tab 6}%thelimit%
+		;msgbox,,, thelast %thelast% thelimit %thelimit% ,1
+		send {tab}day{tab}
+		
+		
+		MouseClick, left, %BaseX% , %BaseY% , 1
+		clipboard =
+				sendinput ^a^c
+					clipwait , 0.5
+					
+		StringReplace, clipboard , clipboard , `n, ¤ , All
+		StringReplace, clipboard , clipboard , `r, ¤ , All
+		StringReplace, clipboard , clipboard , `r`n, ¤, All
+		StringReplace, clipboard , clipboard , `n`r, ¤, All
+		
+		;msgbox %clipboard%
+				;sleep 500
+		
+		;¤¤6300336119 - RRSP¤¤Open order(s): 1¤¤Margin (combined): $4,822.67 USD¤¤Buying Power (combined): $4,696.82 USD¤¤Net Equity (combined): $85,700.64 USD¤¤Converter¤¤USA CAD¤¤down¤¤Order Entry¤¤GIC ¤¤Bonds¤¤Mutual Funds¤¤Options¤¤Stocks¤¤Symbol:	
+		;¤¤AMC¤¤Find Symbol¤¤AMC Entertainment Holdings Inc. Class ABid Size2000Bid31.77Ask31.78Ask Size1600Last31.75¤¤Transaction	Volume	Symbol	Exchange	Order Type	Price	Stop Price	Duration	GTD¤¤(dd/mm/yyyy)	
+		
+		;¤¤¤¤Sell¤¤18¤¤AMC¤¤¤¤Find Symbol¤¤Get Quote¤¤¤¤MNGD-US¤¤¤¤Limit¤¤36.45¤¤¤¤Day¤¤
+				
+		ifinstring, clipboard , ¤¤%account%
+		{
+		;msgbox ,,,account,1
+			ifinstring, clipboard , ¤¤¤¤Sell¤¤%shares%¤¤%thestock%¤¤¤¤Find Symbol¤¤Get Quote¤¤¤¤MNGD-US¤¤¤¤Limit¤¤%thelimit%¤¤¤¤Day¤¤
+			{
+			;msgbox ,,, rest ,1
+				break
+			}
+		}
+				
+
+	}
+	
+		
+	tooltip , %a_linenumber%
+	
+	
+	Thestring = Estimated Commission:$
+		loop, 20
+		{
+			tooltip , %a_linenumber% - %a_index%
+			if (a_index > 19)
+				gosub entersellorder
+			
+			mouseclick, left, %sendorderX%, %sendorderY% , 1
+		
+			mouseclick, left, %confirmorderX% , %confirmorderY% ,1
+	
+			tooltip , %a_linenumber% - %a_index%
+			clipboard =
+				
+			sendinput ^a^c
+				clipwait , 0.5
+				
+			ifinstring, clipboard , %Thestring%
+				break
+			
+			mouseclick, left, 0 , -700 ,1, , , R			
+			
+			sendinput ^a^c
+				clipwait , 0.5
+				
+			ifinstring, clipboard , technical difficulty has been detected
+				sendinput {esc}
+					
+			sleep 500
+		}
+
+	loop, 20
+		{
+			mouseclick, left, 0 , 20 ,1, , , R
+		}
+		
+	sendinput {esc}
+		
+	gosub VBliquidate
+
+
+
+return
+
+killFileExplorer:
+
+
+settimer, killFileExplorer, off
+
+loop,
+{
+	ifWinexist, File Explorer ahk_class CabinetWClass
+		winkill	
+		
+	ifWinexist, OneDrive ahk_class CabinetWClass
+		winkill
+
+	ifwinnotexist, OneDrive ahk_class CabinetWClass
+	{
+		ifwinnotexist, File Explorer ahk_class CabinetWClass
+			break
+	}
+}
+
+
+settimer, killFileExplorer, 500
+	
+return ;====================================================================================================================================================================================================== 
+
+resendorder:
+winactivate, ahk_exe EXCEL.EXE
+	winwaitactive, ahk_exe EXCEL.EXE
+
+		Clipboard := ""
+		While (Clipboard != "")
+			Sleep, 10
+		
+		sleep 100
+		
+		sendinput {up}
+	
+	gosub VBgolong	
+		
+return ;====================================================================================================================================================================================================== 
+
+
+
+;achat
+#F12::
+
+coordmode, mouse, relative
+coordmode, pixel, relative
+
+VBaccumulate:
+
+SetDefaultMouseSpeed , 0
+
+
+thefile = C:\Users\%A_UserName%\Downloads\caseyportfolio.csv
+fileread, Casey , %thefile%
+
+casey = ¤¤%casey%¤¤
+
+StringReplace, Casey , Casey , `n, ¤, All
+StringReplace, Casey , Casey , `r, ¤, All
+
+	;WinActivate, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
+
+
+	winactivate, CHECK ahk_exe EXCEL.EXE
+	winwaitactive, ahk_exe EXCEL.EXE
+	
+	ifwinexist  , Microsoft Excel ahk_class #32770 ,  Cannot open the Clipboard
+		{
+			winactivate, Microsoft Excel ahk_class #32770 , Cannot open the Clipboard
+			controlClick, OK , Microsoft Excel ahk_class #32770, Cannot open the Clipboard
+			winkill, Microsoft Excel ahk_class #32770, Cannot open the Clipboard
+			sendinput {esc}
+			sendinput {enter}
+			
+		}
+	
+		
+	sendinput {down}
+		
+	clipboard =
+
+	loop, 20
+	{	
+		Clipboard := ""
+		While (Clipboard != "")
+		Sleep, 10
+		
+		ifwinexist  ,  Microsoft Excel ,  free up space
+			ControlSend , Button1, {esc},   Microsoft Excel ,  free up space
+		
+		sleep 100
+		
+		sendinput {ctrl down}c{ctrl up}
+		sleep 250
+		clipwait, 1
+		 
+			ifnotinstring, Clipboard , overSMA200_  ; ifinstring, Clipboard , `,
+				gosub VBaccumulate
+			
+			
+			ifinstring, Clipboard , `,
+				break
+				
+		sleep 250
+
+		ifwinexist  , Microsoft Excel ahk_class #32770 ,  Cannot open the Clipboard
+		{
+			winactivate, Microsoft Excel ahk_class #32770 , Cannot open the Clipboard
+			controlClick, OK , Microsoft Excel ahk_class #32770, Cannot open the Clipboard
+			winkill, Microsoft Excel ahk_class #32770, Cannot open the Clipboard
+			sendinput {esc}
+			sendinput {enter}
+		}
+		
+		
+		if (a_index >= 20)
+			gosub restartscript
+	}
+	
+	ifnotinstring, Clipboard , `,
+		return  
+	
+	if not clipboard 
+		gosub restartscript
+	
+	ifinstring, Clipboard , 380038942
+		gosub VBaccumulate		
+
+	
+	
+	ifinstring, Clipboard , -IB-`,
+		{
+			;gosub IBsendsellorder ; reload 
+			gosub VBaccumulate		
+		}
+	
+	StringReplace, clipboard , clipboard , `n, , All
+	StringReplace, clipboard , clipboard , `r,  , All
+			
+	StringSplit, orderdata, clipboard , `, , 
+	
+/*
+	longshort := regexreplace(orderdata1 , "(.*)0LONG", "")
+	longshort := regexreplace(longshort , "0SHORT(.*)", "")
+
+ longshort = SHORT
+ 
+	IfInString, longshort, LONG
+	{
+		msgbox ,,, LONG - exiting , 1
+		return ;====================================================================================================================================================================================================== 
+	}
+*/
+	;dollaramount := orderdata2
+	
+	account := 6300336119
+
+	shares :=  floor( 500 / orderdata4 ) ;regexreplace(clipboard , ",(.*)", "")
+	thestock := regexreplace(orderdata3, "_" , "-" )
+	thelimit:= orderdata4
+	TheDIP := regexreplace(orderdata5, "(.*)_" , "" )
+	TheDIP := regexreplace(TheDIP, ",(.*)" , "" )
+	;msgbox shares %orderdata2% thestock %orderdata3% thelimit %orderdata4%  TheDIP %TheDIP%
+	
+	
+	if (shares = 0)
+		gosub VBaccumulate
+		
+	;tooltip, %thestock% - %shares%, 520 , 285
+	
+	ifinstring, casey , ¤%thestock%¤
+	{
+		;tooltip, Casey Position`n`n%thestock%`n`n-%casey%- , 0 , 0 
+		tooltip, Casey Position`n`n%thestock%, 0 , 0 
+
+
+		;msgbox,,, %thestock% is Casey Position -%casey%- ,1
+		
+		gosub VBaccumulate
+	}	
+	
+VBbuyorder:
+
+
+SetTitleMatchMode, RegEx
+
+wintitle := "Virtual Brokers .*Microsoft.*Edge.*"
+wintitle :=  "Slimjet" ;ahk_class Slimjet_WidgetWin_1
+wintitle :=  "Virtual Brokers - Slimjet" ;ahk_class Slimjet_WidgetWin_1
+
+Winactivate, %wintitle% , ;Chrome Legacy Window ; , - Google Chrome
+winwaitactive , %wintitle% , ,3
+
+
+
+ifwinnotactive , %wintitle%
+	{
+		msgbox ,,, %a_linenumber%  %wintitle% , 1
+		gosub VBbuyorder
+
+	}
+	
+	sendinput {home 5}{esc}	
+
+
+;502 , 348 , 0xCCCCCC
+
+FoundX := 0 
+FoundY := 0
+
+PixelSearch, FoundX, FoundY, 0, 0, a_screenwidth, a_screenheight, 0x1D9D5F , , fast
+mousemove , %FoundX%, %FoundY%
+;msgbox  %FoundX%, %FoundY%
+PixelSearch, FoundX, FoundY, 0 , %FoundY%, a_screenwidth, a_screenheight, 0x222222, , fast
+mousemove , %FoundX%, %FoundY%
+;msgbox  %FoundX%, %FoundY%
+
+BaseX := FoundX 
+BaseY := FoundY
+
+BaseX := 500 
+BaseY := 350
+
+;561 , 347 , 0xFFFFFF
+TickerX := BaseX + 50
+TickerY := BaseY
+
+;1416 , 343 , 0xFDFFFE
+ResetX := BaseX + 900 
+ResetY := BaseY
+
+;1314 , 347 , 0x10038F
+sendorderX := BaseX + 800 
+sendorderY := BaseY
+
+;1039 , 551 , 0xFFFFFF
+confirmorderX := BaseX + 550
+confirmorderY := BaseY + 200
+
+
+
+	MouseClick, left, %ResetX% , %ResetY% , 1
+
+	Loop, 20
+	{
+		tooltip , %a_linenumber%
+
+		if (a_index > 19)
+			gosub VBbuyorder
+
+		sendinput ^0
+		sendinput {ctrl down}{home 5}{ctrl up}{esc}
+
+		MouseClick, left, %BaseX% , %BaseY% , 3
+		clipboard = 
+		sendinput {ctrl down}c{ctrl up}
+		clipwait, 0.5
+		sleep 100
+		
+		ifinstring ,  clipboard ,  Symbol:
+				break
+			
+		sleep 500
+	}
+
+			send {tab 2}buy
+			sleep 100
+			
+			send {tab}%shares%
+			sleep 100
+			
+			send {tab 3}limit
+			sleep 100
+			
+			send {tab 2}%thelimit%
+			sleep 100
+			
+			send {tab}day{tab}
+			sleep 100
+			
+			
+;msgbox Symbol: = %clipboard%
+	
+	loop, 20
+	{
+	
+		loop, 20
+		{
+			tooltip , %a_linenumber%
+
+			if (a_index > 19)
+				gosub VBbuyorder
+
+			clipboard =
+			MouseClick, left, %TickerX% , %TickerY% , 3
+			
+			sleep 100
+			send ^a{del}%thestock%{enter}^a^c
+			sleep 100
+			clipwait, 0.5
+			if (clipboard = thestock)
+					break
+
+			sleep 500			
+		}	
+
+		Thestring = Bid Size
+		loop, 20
+		{
+			tooltip , %a_linenumber% - %a_index%
+			if (a_index > 19)
+				gosub VBbuyorder
+				
+			;MouseClick, left, 700 , 405 , 3
+			MouseClick, left, %TickerX% , %TickerY% , 2
+
+			tooltip , %a_linenumber% - %a_index%
+			clipboard =
+			
+				MouseClick, left, %BaseX% , %BaseY% , 1
+				sendinput ^a^c
+					clipwait , 0.5
+					
+				ifinstring, clipboard , %Thestring%
+					break
+					
+					sleep 100
+
+		}
+		
+		MouseClick, left, %TickerX% , %TickerY% , 1
+		
+		StringReplace, clipboard , clipboard , `n, ¤ , All
+		StringReplace, clipboard , clipboard , `r, ¤ , All
+		StringReplace, clipboard , clipboard , `r`n, ¤, All
+		StringReplace, clipboard , clipboard , `n`r, ¤, All
+		StringReplace, clipboard , clipboard , %a_tab% , ¤, All
+		theask := RegExReplace( clipboard , "Ask Size(.*)" , "") 
+		theask := RegExReplace( theask , "(.*)Ask" , "") 	
+		thelast := RegExReplace( clipboard , "Transaction(.*)" , "") 
+		thelast:= RegExReplace( thelast , "(.*)Last" , "") 
+		thelast:= RegExReplace( thelast , "¤(.*)" , "") 
+		
+		thelimit:= round(1.03*max( thelimit , thelast),2)
+		thelimit:= round( (1 - thedip )*min( thelimit , thelast),2)
+	
+
+		;msgbox,,, thelast %thelast% thelimit %thelimit% ,1
+		send {tab 6}%thelimit%
+		;msgbox,,, thelast %thelast% thelimit %thelimit% ,1
+		send {tab}day{tab}
+		
+		
+		MouseClick, left, %BaseX% , %BaseY% , 1
+		clipboard =
+				sendinput ^a^c
+					clipwait , 0.5
+					
+		StringReplace, clipboard , clipboard , `n, ¤ , All
+		StringReplace, clipboard , clipboard , `r, ¤ , All
+		StringReplace, clipboard , clipboard , `r`n, ¤, All
+		StringReplace, clipboard , clipboard , `n`r, ¤, All
+		
+		;msgbox %clipboard%
+				;sleep 500
+		
+		;¤¤6300336119 - RRSP¤¤Open order(s): 1¤¤Margin (combined): $4,822.67 USD¤¤Buying Power (combined): $4,696.82 USD¤¤Net Equity (combined): $85,700.64 USD¤¤Converter¤¤USA CAD¤¤down¤¤Order Entry¤¤GIC ¤¤Bonds¤¤Mutual Funds¤¤Options¤¤Stocks¤¤Symbol:	
+		;¤¤AMC¤¤Find Symbol¤¤AMC Entertainment Holdings Inc. Class ABid Size2000Bid31.77Ask31.78Ask Size1600Last31.75¤¤Transaction	Volume	Symbol	Exchange	Order Type	Price	Stop Price	Duration	GTD¤¤(dd/mm/yyyy)	
+		
+		;¤¤¤¤Sell¤¤18¤¤AMC¤¤¤¤Find Symbol¤¤Get Quote¤¤¤¤MNGD-US¤¤¤¤Limit¤¤36.45¤¤¤¤Day¤¤
+				
+		ifinstring, clipboard , ¤¤%account%
+		{
+		;msgbox ,,,account,1
+			ifinstring, clipboard , ¤¤¤¤Buy¤¤%shares%¤¤%thestock%¤¤¤¤Find Symbol¤¤Get Quote¤¤¤¤MNGD-US¤¤¤¤Limit¤¤%thelimit%¤¤¤¤Day¤¤
+			{
+			;msgbox ,,, rest ,1
+				break
+			}
+		}
+				
+
+	}
+	
+		
+	tooltip , %a_linenumber%
+	
+	
+	Thestring = Estimated Commission:$
+		loop, 20
+		{
+			tooltip , %a_linenumber% - %a_index%
+			if (a_index > 19)
+				gosub VBbuyorder
+			
+			mouseclick, left, %sendorderX%, %sendorderY% , 1
+		
+			mouseclick, left, %confirmorderX% , %confirmorderY% ,1
+	
+			tooltip , %a_linenumber% - %a_index%
+			clipboard =
+				
+			sendinput ^a^c
+				clipwait , 0.5
+				
+			ifinstring, clipboard , %Thestring%
+				break
+			
+			mouseclick, left, 0 , -700 ,1, , , R			
+			
+			sendinput ^a^c
+				clipwait , 0.5
+				
+			ifinstring, clipboard , technical difficulty has been detected
+				sendinput {esc}
+					
+			sleep 500
+		}
+
+;msgbox done
+	loop, 20
+		{
+			mouseclick, left, 0 , 20 ,1, , , R
+		}
+		
+	sendinput {esc}
+		
+	gosub VBaccumulate
+
+return
