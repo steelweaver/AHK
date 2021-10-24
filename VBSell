@@ -1,5 +1,9 @@
+
 #F1::
 #+F12::
+
+SetDefaultMouseSpeed , 0
+SetTitleMatchMode , 2 	
 
 coordmode, mouse, relative
 coordmode, pixel, relative
@@ -7,7 +11,6 @@ coordmode, pixel, relative
 VBliquidate:
 
 SetDefaultMouseSpeed , 0
-
 
 thefile = C:\Users\%A_UserName%\Downloads\caseyportfolio.csv
 fileread, Casey , %thefile%
@@ -17,82 +20,68 @@ casey = ¤¤%casey%¤¤
 StringReplace, Casey , Casey , `n, ¤, All
 StringReplace, Casey , Casey , `r, ¤, All
 
-	;WinActivate, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-
-
-	winactivate, ahk_exe EXCEL.EXE
+	winactivate, EXIT ahk_exe EXCEL.EXE
 	winwaitactive, ahk_exe EXCEL.EXE
 	
 	ifwinexist  , Microsoft Excel ahk_class #32770 ,  Cannot open the Clipboard
-		{
-			winactivate, Microsoft Excel ahk_class #32770 , Cannot open the Clipboard
-			controlClick, OK , Microsoft Excel ahk_class #32770, Cannot open the Clipboard
-			winkill, Microsoft Excel ahk_class #32770, Cannot open the Clipboard
-			sendinput {esc}
-			sendinput {enter}
-		}
-		
+	{
+		winactivate, Microsoft Excel ahk_class #32770 , Cannot open the Clipboard
+		controlClick, OK , Microsoft Excel ahk_class #32770, Cannot open the Clipboard
+		winkill, Microsoft Excel ahk_class #32770, Cannot open the Clipboard
+		sendinput {esc}
+		sendinput {enter}
+	}
+
+	;sendinput {up}		
 	sendinput {down}
-		
-	clipboard =
 
 	loop, 20
 	{	
-		Clipboard := ""
-		While (Clipboard != "")
-		Sleep, 10
-		
-		ifwinexist  ,  Microsoft Excel ,  free up space
-			ControlSend , Button1, {esc},   Microsoft Excel ,  free up space
-		
-		sleep 100
-		
-		sendinput {ctrl down}c{ctrl up}
-		sleep 250
-		clipwait, 1
-		ifinstring, Clipboard , `,
-			Break
-		sleep 250
+		try
+		{	
+			Clipboard := ""
+			While (Clipboard != "")
+			Sleep, 10
 
-		ifwinexist  , Microsoft Excel ahk_class #32770 ,  Cannot open the Clipboard
-		{
-			winactivate, Microsoft Excel ahk_class #32770 , Cannot open the Clipboard
-			controlClick, OK , Microsoft Excel ahk_class #32770, Cannot open the Clipboard
-			winkill, Microsoft Excel ahk_class #32770, Cannot open the Clipboard
-			sendinput {esc}
-			sendinput {enter}
+			ifwinexist  ,  Microsoft Excel ,  free up space
+				ControlSend , Button1, {esc},   Microsoft Excel ,  free up space
+
+			sleep 100
+
+			sendinput {ctrl down}c{ctrl up}
+			sleep 250
+			clipwait, 1
+			ifinstring, Clipboard , `,
+				Break
+	
+			sleep 250
 		}
-		
-		
-		if (a_index >= 20)
-			gosub restartscript
 	}
-	
+			
+			
+
+		
+			ifnotinstring, Clipboard , `,
+				return
+				
+			ifinstring, Clipboard , -IB-
+				reload
+				
+
+tooltip
 	ifnotinstring, Clipboard , `,
-		return  
-	
-	if not clipboard 
-		gosub restartscript
-	
-	ifinstring, Clipboard , 380038942
-		gosub VBliquidate		
+		reload  
 
-	
-	
-	ifinstring, Clipboard , -IB-`,
-		{
-			gosub IBsendsellorder ; reload 
-			gosub VBliquidate		
-		}
-	
-	
+	if (shares = 0)
+		gosub VBliquidate
 
-	
+	;tooltip, %thestock% - %shares%, 520 , 285
+
 	StringReplace, clipboard , clipboard , `n, , All
 	StringReplace, clipboard , clipboard , `r,  , All
-			
+
 	StringSplit, orderdata, clipboard , `, , 
-	
+
 /*
 	longshort := regexreplace(orderdata1 , "(.*)0LONG", "")
 	longshort := regexreplace(longshort , "0SHORT(.*)", "")
@@ -106,689 +95,475 @@ StringReplace, Casey , Casey , `r, ¤, All
 	}
 */
 	;dollaramount := orderdata2
-	
+
 	account := orderdata1
 	shares :=  orderdata2 ;regexreplace(clipboard , ",(.*)", "")
 	thestock := regexreplace(orderdata3, "_" , "-" )
 	thelimit:= orderdata4
 
-	;msgbox shares %orderdata2% thestock %orderdata3% thelimit %orderdata4%
-	
-	if (shares = 0)
-		gosub VBliquidate
-		
-	;tooltip, %thestock% - %shares%, 520 , 285
-	
-	ifinstring, casey , ¤%thestock%¤
+tooltip
+
+	if (  InStr(Casey, thestock , CaseSensitive := false, StartingPos := 1, Occurrence := 1) > 0 ) ; ifinstring, casey , ¤%thestock%¤
 	{
 		;tooltip, Casey Position`n`n%thestock%`n`n-%casey%- , 0 , 0 
-		tooltip, Casey Position`n`n%thestock%, 0 , 0 
+		tooltip, Casey Position`n`n%thestock% ; , 0 , 0 
 
+		;msgbox,,, %thestock% is Casey Position -%casey%- , 100
 
-		;msgbox,,, %thestock% is Casey Position -%casey%- ,1
-		
 		gosub VBliquidate
 	}	
+
+	;msgbox FoundPos -%FoundPos%-
+	;msgbox thestock -%thestock%-`n`nCasey -%casey%-
+VBentersellorder:
+	wintitle :=  "Virtual Brokers | Dashboard - Slimjet"
+
+	WinMaximize, %wintitle% 
+	Winactivate, %wintitle% 
+	winwaitactive , %wintitle% , ,3
+
+loop, 1
+{
+	sendinput {home 5}{esc 5}	
+
+	mouseclick, left ,1905 , 118 , 1
+
+	mouseclick, left , 48 , 216 , 1
 	
-	
-	
-entersellorder:
-/*
-	WinMaximize  ,  Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-	WinActivate, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-	winwaitactive, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-*/
-	
+	mouseclick, left , 463 , 315 , 1
 
-SetTitleMatchMode, RegEx
+	mouseclick, left , 585 , 293 , 1
 
-wintitle := "Virtual Brokers .*Microsoft.*Edge.*"
-wintitle :=  "Slimjet" ;ahk_class Slimjet_WidgetWin_1
-wintitle :=  "Virtual Brokers - Slimjet" ;ahk_class Slimjet_WidgetWin_1
+	mouseclick, left , 390 , 373 , 1
 
-Winactivate, %wintitle% , ;Chrome Legacy Window ; , - Google Chrome
-winwaitactive , %wintitle% , ,3
+	mouseclick, left , 331 , 674 , 1
 
+	;mouseclick, left ,659 , 433 , 1
 
+	try
+	{	
+		mouseclick, left , 390 , 487 , 1
+		sendinput {shift down}{tab 2}{shift up}{up 10}{down}{enter}
 
-ifwinnotactive , %wintitle%
-	{
-		msgbox ,,, %a_linenumber%  %wintitle% , 1
-		gosub entersellorder
+		Clipboard := "" ;"
+		While (Clipboard != "")
+		Sleep, 10
 
-	}
-	
-	sendinput {home 5}{esc}	
-
-MouseClick, left, 1426 , 335 , 1
-
-
-	MouseClick, left, 1417 , 316 , 1
-
-	Loop, 20
-	{
-		tooltip , %a_linenumber%
-
-		if (a_index > 19)
-			gosub entersellorder
-
-		
-		sendinput ^0
-
-		MouseClick, left, 479 , 237 , 3
-		clipboard = 
-		sendinput {ctrl down}c{ctrl up}
-		clipwait, 0.5
-		sleep 100
-		
-		ifinstring, clipboard, Account
-			break
-			
-		sendinput {home 5}{esc}
 		sleep 500
-	}
 
-
-	;947 , 348 , 0xCCCCCC
-	
-	;MouseClick, left, 902 , 345 , 1 ;616 , 232 , 1
-	;MouseClick, left, 1047 , 304 , 1
-	;MouseClick, left, 1423 , 354 , 1
-	;MouseClick, left, 596 , 325 , 3	
-
-	loop, 20
-	{
-		tooltip , %a_linenumber%
-
-		if (a_index > 19)
-			gosub entersellorder
-	
-		MouseClick, left, 596 , 330 , 3	
-
-		clipboard =
-			sendinput ^a{del}%thestock%{enter}^a^c
-				sleep 100
-			if (clipboard = thestock)
-			break
-
-		sleep 100		
-	}	
-	
-	
-	sendinput {tab}s{tab}
-	
-	;sendinput %shares%
-	Thestring = %shares%
-	loop, 20
-	{
-			tooltip , %a_linenumber%
-
-		if (a_index > 19)
-				gosub entersellorder
-			
-		;MouseClick, left, 637 , 400 , 2
-		clipboard =
-			sendinput ^a{del}%Thestring%{enter}^a^c
-				sleep 100
-			if (clipboard = Thestring)
-			break
-
-		sleep 100		
-	}
-
-	sendinput {tab}
-	
-	loop, 20
-	{
-	
-		tooltip , %a_linenumber%
-		Thestring = %thestock%
-		loop, 20
-		{
-			tooltip , %a_linenumber%
-			if (a_index > 19)
-				gosub entersellorder
-				
-			;MouseClick, left, 700 , 405 , 3
-		
-			clipboard =
-				sendinput ^a{del}%Thestring%{enter}^a^c
-				clipwait , 0.5
-			if (clipboard = Thestring)
-				break
-
-			sleep 100		
-		}
-		
-		loop, 20
-		{
-			tooltip , %a_linenumber%
-			clipboard =	
-			sleep 100
-			sendinput {tab 2}
-			sleep 100
-			sendinput l{ctrl down}ac{ctrl up}
-			clipwait , 0.5
-			
-			ifinstring, Clipboard, MNGD-
-				break 
-			
-			sendinput {shift down}{tab 2}{shift up}
-			
-			;msgbox ,,, %clipboard% ,1 
-			sleep 500
-		}
-	
-			ifinstring, Clipboard, MNGD-
-				break 
-	}
-	tooltip , %a_linenumber%
-
-
-		
-/*
-	MouseClick, left, 600 , 233 , 1
-	
-	tooltip , %account%
-	;sendinput {down 5}{up 1}{tab}
-	sleep 111
-	sendinput {up 10}
-	sleep 111
-	
-	send %account%{tab}
-	sleep 500
-
-	sendinput {tab}
-*/
-
-/*
-	Loop, 20
-	{
-		mouseclick, left, 1206 , 352 , 3
-		
-		;mouseclick, left, 1471 , 437 , 3
-
-		sendinput ^c
-		sleep 100
-
-		tooltip , %a_linenumber%
-		clipwait, 1
-
-		if clipboard
-			break
-	}
-*/
-	;msgbox %a_linenumber%
-	Loop, 200
-	{
-		
-		;msgbox, ,,  %a_linenumber% , 1
-
-		MouseClick, left, 1221 , 338 , 1
-/*
-		MouseClick, left, 655 , 238, , 1
-		
-		tooltip , %account%
-		;sendinput {down 5}{up 1}{tab}
-		;sleep 111
-		;sendinput {up 10}
-		;sleep 111
-		support@coveo.com ; support@1r9ns7ti0n5lfnmsokxv4yc7l.in.salesforce.com		
-		send %account%{tab}
-*/
-		
-		if (a_index > 50)
-		{
-			msgbox, ,,  %a_linenumber% - resendorder , 1
-			gosub entersellorder
-		}
-		
-		clipboard =
-		mouseclick, left, 1207 , 325 , 1
 		sendinput {ctrl down}ac{ctrl up}
-		sleep 100
-
-		tooltip , %a_linenumber%
-		clipwait, 1
-
-		StringReplace, clipboard , clipboard , `n, ¤ , All
-
-		StringReplace, clipboard , clipboard , `r, ¤ , All
-		StringReplace, clipboard , clipboard , %a_tab% , ¤, All
+		sleep 250
+		clipwait, 0.5
 		
-		;msgbox %Clipboard%
-		
-		ifinstring, Clipboard, Symbol:¤¤¤%thestock%
+		ifinstring, Clipboard , trading password
 		{
-			ifinstring, Clipboard, Bid Size
-				break
+			soundBeep , 400, 125
+			soundBeep , 400, 125
+			soundBeep , 400, 125
+			
+			msgbox enter trading password
+			
+			gosub VBentersellorder
 		}
+		
+		ifinstring, Clipboard , Please fill out all fields
+		{
+			gosub VBentersellorder
+		}
+		
+		;ifinstring, Clipboard , RRSP ; %account%
+		;	break
+		
+			If InStr(Clipboard, "RRSP") and InStr(Clipboard, "Margin")
+				break
 				
-		ifinstring, Clipboard, Invalid symbol. Please check and try again.
-		{
-			msgbox, ,,   %a_linenumber% -  Invalid symbol. Please check and try again. , 1
-			gosub VBliquidate
-		}
-		;mouseclick , left,  1218 , 356 , 1
-		sleep 500
-		
-	}
-
-		tooltip , %a_linenumber%
-		
-		ifinstring, Clipboard, Symbol:¤¤¤%thestock%
-		{
-			ifnotinstring, Clipboard, Bid Size
-				{
-					msgbox, ,,  %a_linenumber% - entersellorder , 1
-					gosub entersellorder
-				}
-		}
-	
-	StringReplace, clipboard , clipboard , `n, %a_space% , All
-
-	StringReplace, clipboard , clipboard , `r, %a_space% , All
-	StringReplace, clipboard , clipboard , `, , . , All
-
-
-	Accountsize := regexreplace(clipboard , "(.*)Net Equity \(combined\): \$", "")
-	Accountsize := regexreplace(Accountsize , "Converter(.*)", "")
-	Accountsize := regexreplace(Accountsize , " USD(.*)", "")
-	StringReplace, Accountsize , Accountsize , . ,  , All
-	StringReplace, Accountsize , Accountsize , `, ,  , All
-	Accountsize := round(Accountsize/100,2)
-	;msgbox,,,Accountsize=%Accountsize%,1
-
-	if (Accountsize = 0)
-		Accountsize = 50000
-		
-	;Margin (combined): 
-	TheMargin := regexreplace(clipboard , "(.*)Margin \(combined\): \$", "")	
-	TheMargin := regexreplace(TheMargin , "Converter(.*)", "")
-	TheMargin := regexreplace(TheMargin , " USD(.*)", "")
-	StringReplace, TheMargin , TheMargin , . ,  , All
-	StringReplace, TheMargin , TheMargin , `, ,  , All	
-	StringReplace, TheMargin , TheMargin , . ,  , All
-	TheMargin := round(TheMargin/100,2)
-	
-	;msgbox,,, TheMargin=%TheMargin%,1
-	
-	clipboard := regexreplace(clipboard , "Cours acheteur", "")
-	clipboard := regexreplace(clipboard , "Cours vendeur", "")
-	clipboard := regexreplace(clipboard , "Dernière", "")
-
-	clipboard := regexreplace(clipboard , "TransactionVolume(.*)", "")
-	clipboard := regexreplace(clipboard , "(.*)Bid", "")
-	StringReplace, clipboard , clipboard , %a_space%,  , All
-	StringReplace, clipboard , clipboard , s.o., 0 , All
-	
-	;msgbox %a_linenumber%clipboard`n`n%clipboard%
-	bid := regexreplace(clipboard , "Ask(.*)", "")
-	Ask := regexreplace(clipboard , "AskSize(.*)", "")
-	Ask := regexreplace(Ask , "(.*Ask)", "")
-	last := regexreplace(clipboard , "(.*)Last", "")
-	
-	;msgbox %clipboard%
-	limit := thelimit
-
-	if (last >= thelimit and last <> "N/A" and last < 0)
-		limit := last
-
-	if (bid >= thelimit and bid <> "N/A" and bid < 0)
-		limit := bid
-
-	;if (ask >= thelimit)
-		;limit := ask
-
-	;msgbox Ask: -%Ask%-`n`n Ask: -%Ask%-`n`n last: %last%`n`n thelimit: %thelimit% limit: %limit%
-
-	limit := regexreplace(limit , " (.*)","")
-
-	marginratio := 1+(themargin / accountsize)
-	
-	;msgbox ,,,marginratio=%marginratio% ,1
-
-	limit := round((1+(0.05*marginratio))*limit,2)
-
-	;msgbox shares %orderdata2% thestock %orderdata3% limit %limit%`n`n%clipboard%
-
-
-	if (limit = 0 or not limit)
-	{
-		msgbox, ,,  %a_linenumber% - limit = 0 or not limit , 1
-		gosub entersellorder
 	}
 	
-	;shares := Floor(limit)
+}
+/*
+		StringReplace, clipboard , clipboard , `n, _, All
+		StringReplace, clipboard , clipboard , `r, _, All
+		theMargin := RegExReplace( Clipboard , "(.*)margin" , "") 
+		
+		msgbox %themargin%
+		
+		
+		return
+		
+		*/
+sendinput {tab 2}
 
-	/*
-	shares := ceil(dollaramount / Limit)
-
-	if (shares < 1)
-	shares := 1
-	*/
-	;msgbox shares %shares% := dollaramount -%dollaramount%- / Limit -%Limit%-
-	loop, 20
-	{
-		;msgbox, ,,  %a_linenumber% , 1
+loop, 5
+{
+	thesleep := a_index*500
 	
-		MouseClick, left, 642 , 242 , 1			
+	;mouseclick, left , 370 , 569 , 3
+	setkeydelay , 100 , 100
+	send {click 370 569}{ctrl down}a{ctrl up}%thestock%{enter}
 
-	sleep 100
+	;sleep 500
+	
+	
+	sendinput {tab}{down 5}
+	sleep 10
 
-	/*
-	;select Margin
-	if (account = "Margin")
-		sendinput {up 4}{down 1}{tab}
-	;select RRSP	
-	it (account = "RRSP")
-		sendinput {up 4}{down 2}{tab}
-	*/
-
-
-	sendinput {up 4}
-	sleep 100 
-	send %account%
-	;msgbox %account%
-
-	 
-		sleep 100
-	send {tab}
-		MouseClick, left, 637 , 400 , 2
+	sendinput {tab}%shares%
+	sleep 10
 		
-		;sendinput %shares%
-		/*
-			Thestring = %shares%
-			loop, 20
-			{
-				clipboard =
-					sendinput ^a{del}%Thestring%{enter}^a^c
-						sleep 100
-					if (clipboard = Thestring)
-					break
+	sendinput {tab}{up 5}{down}
+	sleep 10
 
-				sleep 100		
-			}
-		*/
+	sendinput {tab}
+	sleep 10
 
-		;sendinput {tab}
-		;sleep 100
-		
-		;sendinput %thestock%
-		
-		/*
-		Thestring = %thestock%
-		loop, 20
-		{
-			clipboard =
-				sendinput ^a{del}%Thestring%{enter}^a^c
-					sleep 100
-				if (clipboard = Thestring)
-				break
-
-			sleep 100		
-		}
-		*/
-		
-		;sleep 100
-		;sendinput {tab}
-		MouseClick, left, 987 , 410 , 3
-		
-
-		;GTC order
-		;sendinput %limit%{tab}{up 4}{down 1}
-		;Day order
-		sendinput %limit%
-		
-		Thestring = %limit%
-		loop, 10
-		{
-			clipboard =
-				sendinput ^a{del}%Thestring%{enter}^a^c
-					sleep 100
-				if (clipboard = Thestring)
-				break
-
-			sleep 100		
-		}
-		sendinput {tab}{up 4}
-
-		MouseClick, left, 1417 , 316 , 1
-		sleep 100	
-
-		clipboard =
-			sendinput {ctrl down}ac{ctrl up}
-			sleep 100
-
-			tooltip , %a_linenumber%
-			clipwait, 1
-			
-		StringReplace, clipboard , clipboard , `n, ¤ , All
-		StringReplace, clipboard , clipboard , `r, ¤ , All
-		StringReplace, clipboard , clipboard , `r`n, ¤, All
-		StringReplace, clipboard , clipboard , `n`r, ¤, All
-		StringReplace, clipboard , clipboard , %a_tab% , ¤, All
-
-		ifinstring , clipboard , ¤Limit¤¤%limit%¤¤¤¤Day¤
+	sendinput {tab}{up 5}
+	sleep 10
+	
+	loop,
+	{
+		try
 		{	
-			ifinstring , clipboard , ¤Sell¤¤%shares%¤¤%thestock%¤¤¤¤Find Symbol¤
-			{		
-				ifinstring , clipboard , %account%
-				{
-					break				
-				}
-			}		
-		}	
+			Clipboard := "" ;"
+			While (Clipboard != "")
+			Sleep, 10
+			
+			sendinput {ctrl down}ac{ctrl up}
+			sleep 250
+			clipwait, 1
+		}
 		
-		;msgbox %a_linenumber% %clipboard%
+			If InStr(Clipboard, "Margin")	
+			{
+				StringReplace, clipboard , clipboard , `r`n, _, All
+				StringReplace, clipboard , clipboard , `n`r, _, All
+				StringReplace, clipboard , clipboard , `n, _, All
+				StringReplace, clipboard , clipboard , `r, _, All
+				StringReplace, clipboard , clipboard , `,,  , All
+				
+				NetEquity := RegExReplace( Clipboard , "(.*)_Net Equity_\$" , "") 
+				NetEquity := RegExReplace( NetEquity  , "_(.*)" , "") 
+				theMargin := RegExReplace( Clipboard , "(.*)_Margin_\$" , "") 
+				theMargin := RegExReplace( theMargin  , "_(.*)" , "") 
+				
+				marginratio := theMargin / NetEquity
+				
+				if (marginratio > 0 and marginratio < 1)
+					break
+			}
+			
+		sleep 1000
 	}
 	
-	Loop, 20 
-	{
-	;msgbox, ,,  %a_linenumber% , 1
+	;msgbox theMargin %theMargin%`n`n NetEquity %NetEquity%`n`n marginratio %marginratio%
 
-	tooltip , %a_linenumber%
-	;1062 , 124 , 0xA6A6A6
 	
-		if (a_index >19)
-			gosub entersellorder
+	sendinput {shift down}{tab 5}{shift up}
+
+	;send {enter 1}
+
+	setkeydelay , 0
 	
-		loop, 30
-		{
-			tooltip , %a_linenumber%
+	;sleep %thesleep%
+	;sleep %thesleep%
+	
+	loop, 5
+	{
+		tooltip ,  %a_index% wait for (%thestock%) marginratio %marginratio%
 		
-			mouseclick, left, 1221 , 325 , 1
-			sleep 100		
+		thesleep := a_index*100
 		
-		
-			clipboard =
-				sendinput {ctrl down}ac{ctrl up}
-				clipwait , 0.5
+		mouseclick, left , 339 , 756 , 1
+
+		try
+		{	
+			Clipboard := "" ;"
+			While (Clipboard != "")
+				Sleep, 10
 			
+			sendinput {ctrl down}ac{ctrl up}
+			sleep 250
+			clipwait, 1
+	
 			/*
-			ifinstring, Clipboard, MNGD-
-			{
-				ifnotinstring, Clipboard, Required
-					break
-			}	
+			ifinstring, Clipboard , (%thestock%)
+				break
 			*/
 			
-			;mouseclick, left, 1056 , 171 , 1	
-			mouseclick, left, 1056 , 158 , 1
-						
-			clipboard =
-			sendinput {ctrl down}ac{ctrl up}
-			clipwait , 0.5
+			If InStr(Clipboard, thestock) and InStr(Clipboard, "Bid Size") and InStr(Clipboard, "Ask Size") and InStr(Clipboard, "Last")
+				break
+		}
 		
-			ifinstring, Clipboard, A technical difficulty has been detected ;ERROR B99: A technical difficulty has been detected. The status of this order is unknown. To avoid duplication contact our help desk indicating this error.
-			{	
-				sendinput {esc}
-				mouseclick, left, 	1141 , 212  , 1
+		sleep %thesleep%
+	}
+	
+	/*
+	ifinstring, Clipboard , (%thestock%)
+	{
+		ifinstring, Clipboard , Ask Size
+			break
+	}
+	*/
+		If InStr(Clipboard, thestock) and InStr(Clipboard, "Bid Size") and InStr(Clipboard, "Ask Size") and InStr(Clipboard, "Last")
+			break
+}
+
+		StringReplace, clipboard , clipboard , `n, _, All
+		StringReplace, clipboard , clipboard , `r, _, All
+		StringReplace, clipboard , clipboard , %a_tab%, _, All
+		
+		loop
+		{
+			StringReplace, clipboard , clipboard , __, _, All
+			
+			ifnotinstring, Clipboard , __
+				break	
+		}
+		
+clipboard := regexreplace(clipboard , "Ask Size(.*)", "")
+
+Thebid := regexreplace(clipboard , "(.*)_Bid_", "")
+Thebid := regexreplace(Thebid , "_(.*)", "")
+if Thebid is not number
+	thebid := thelimit
+	
+TheAsk := regexreplace(clipboard , "(.*)_Ask_", "")
+TheAsk := regexreplace(TheAsk , "_(.*)", "")
+if TheAsk is not number
+	TheAsk := thelimit
+	
+TheLast := regexreplace(clipboard , "(.*)_Last_", "")
+TheLast := regexreplace(TheLast , "_(.*)", "")
+if TheLast is not number
+	TheLast := thelimit
+
+thelimit := round( (1 + max(0.05, marginratio) ) * max(thelimit ,Thebid, TheAsk, TheLast),2)
+;msgbox ,,, Thebid %Thebid% `n TheAsk %TheAsk% `n  TheLast %TheLast%`n  thelimit %thelimit%  `n`n %clipboard%
+
+if (thelast <= 0.01 )
+	{
+		msgbox ,,, thelast <= 0.01 , 1
+		gosub VBliquidate
+	}
+	
+if (thelimit <= 0 )
+	{
+		msgbox ,,, thelimit <= 0 , 1
+		gosub VBliquidate
+	}
+
+
+;msgbox ,,, (%thestock%) , 1
+
+loop, 5
+{
+	;mouseclick, left , 370 , 569 , 1
+
+	;sendinput {shift down}{tab 8}{shift up}
+	
+	
+	loop , 10
+	{
+		try
+		{	
+			Clipboard := "" ;"
+			While (Clipboard != "")
+				sleep 10
+			
+			sendinput {click 1276 559 }{ctrl down}a{ctrl up}%thelimit%{ctrl down}ac{ctrl up}
+			sleep 250
+			clipwait, 1
+			
+
+			if ( Clipboard = thelimit)
+					break	
+
+			ifinstring, Clipboard , Fill or Kill
+			{
+				gosub VBentersellorder
 			}
 			
-			sleep 500
-		
-			tooltip , %a_linenumber%
-			mouseclick, left, 1343 , 332 , 1
-			
-			loop, 20
+			ifinstring, Clipboard , Please fill out all fields
 			{
-				tooltip , %a_linenumber%
-						
-				mouseclick, left, 1037 , 156 , 1
-
-				clipboard =
-				sendinput {ctrl down}ac{ctrl up}
-				clipwait , 0.5
+				gosub VBentersellorder
+			}
+			
+		}
+	}
+	
+	
+	if ( Clipboard <> thelimit)
+	{
+				gosub VBentersellorder
+	}
 		
-				ifinstring, Clipboard, A technical difficulty has been detected ;ERROR B99: A technical difficulty has been detected. The status of this order is unknown. To avoid duplication contact our help desk indicating this error.
-				{	
-					sendinput {esc}
-					mouseclick, left, 	1141 , 212  , 1
-				}
+	ifinstring, Clipboard , Please fill out all fields
+	{
+		gosub VBentersellorder
+	}
+
+	sendinput {tab}
+	sleep 100
+	
+	/*
+	sendinput {tab}{down 5}
+	sleep 100
+
+	sendinput {tab}%shares%
+	sleep 100
+		
+	sendinput {tab}{up 5}{down}
+	sleep 100
+
+	sendinput {tab}%thelimit%
+	sleep 100
+
+	sendinput {tab}{up 5}
+	sleep 100
+	*/
+
+	try
+	{	
+		Clipboard := "" ;"
+		While (Clipboard != "")
+			sleep 10
+		
+		sendinput {ctrl down}ac{ctrl up}
+		sleep 250
+		clipwait, 1
+		
+		StringReplace, clipboard , clipboard , `n, _, All
+		StringReplace, clipboard , clipboard , `r, _, All
+		StringReplace, clipboard , clipboard , %a_tab%, _, All
+		
+		loop
+		{
+			StringReplace, clipboard , clipboard , __, _, All
 			
-				mouseclick, left, 1010 , 527 , 1
+			ifnotinstring, Clipboard , __
+				break	
+		}
+	
+		;msgbox %clipboard%
+		ifinstring, Clipboard , trading password
+		{
+			soundBeep , 400, 125
+			soundBeep , 400, 125
+			soundBeep , 400, 125
 			
-				clipboard =
-				sendinput {ctrl down}ac{ctrl up}
-				clipwait , 0.5
-				ifinstring, Clipboard, Estimated Commission
-					{
-					;msgbox Estimated Commission
-					ifinstring, Clipboard,  (%thestock%:
-						{				
-							;msgbox  (%thestock%:
-							ifnotinstring, Clipboard,  Loading...
+			msgbox enter trading password
+			
+			gosub VBentersellorder
+		}
+
+		
+		ifinstring, Clipboard , Please fill out all fields
+		{
+			gosub VBentersellorder
+		}
+			
+			
+			
+		ifinstring, Clipboard , _Symbol_%thestock%_
+		{
+			ifinstring, Clipboard , _Limit Price_%thelimit%
+			{
+				ifinstring, Clipboard , _Duration_Day_
+				{		
+					ifinstring, Clipboard , _Side_Sell_
+					{		
+						ifinstring, Clipboard , _Volume_%shares%_
+						{
 							break
 						}
 					}
-				sleep 200
-			}
-			
-			ifinstring, Clipboard, Estimated Commission:$
-					break
-					
-			ifnotinstring, Clipboard, MNGD-	
-			{	
-				msgbox ,,, %a_linenumber% ,1
-				gosub entersellorder
-			}
-			
-		}
 
-		;mouseclick, left, 1632 , 434 , 1
-		;sleep 1000
-		
-		
-		clipboard =
-			sendinput {ctrl down}ac{ctrl up}
-			sleep 100
-
-			tooltip , %a_linenumber%
-			clipwait, 1
-
-		StringReplace, clipboard , clipboard , `n, ¤ , All
-
-		StringReplace, clipboard , clipboard , `r, ¤ , All
-		StringReplace, clipboard , clipboard , %a_tab% , ¤, All
-		
-		ifnotinstring , clipboard , ¤Limit¤¤%limit%¤¤¤¤Day¤
-		{	
-		;msgbox ¤Limit¤¤%limit%¤¤¤¤Day¤
-			msgbox ,,, %a_linenumber% ,1
-			gosub entersellorder
-		}
-		ifnotinstring , clipboard , ¤Sell¤¤%shares%¤¤%thestock%¤¤¤¤Find Symbol¤
-		{
-		;msgbox  ¤Sell¤¤%shares%¤¤%thestock%¤¤¤¤Find Symbol¤
-			msgbox ,,, %a_linenumber% ,1
-			gosub entersellorder
-		}	
-		
-		ifnotinstring , clipboard , %account%
-		{
-		;msgbox ¤Account: ¤¤%account% -
-			msgbox ,,, %a_linenumber% ,1
-			gosub entersellorder
-		}
-			
-			
-		;msgbox %clipboard%
-
-			FoundPos := 0
-			FoundPos := RegExMatch(clipboard, "¤..Required")
-			if ( FoundPos <> 0  )
-			{
-				gosub VBliquidate
-			}
-		
-		ifinstring, Clipboard, Estimated Commission:$
-		{
-			ifnotinstring, Clipboard, Estimated Commission:Loading
-				{
-					ifnotinstring, Clipboard, ()
-						break
 				}
-		}
-			
-			mouseclick, left, 1102 , 123 , 1
-			clipboard =
-			sendinput {ctrl down}ac{ctrl up}
-			clipwait , 0.5
-		
-			ifinstring, Clipboard, A technical difficulty has been detected
-			{	
-				sendinput {esc}
-				mouseclick, left, 	1348 , 497 , 1
 			}
-			
+		}
+
+		;sleep 250
+	}
+}	
+
+;msgbox,,, wait for preview order, 1
+
+loop, 100
+{
+
+	tooltip , wait for preview order %a_index% 
+	foundx := 0
+	
+	;PixelSearch, FoundX, FoundY, 1700 , a_screenheight/2 , a_screenwidth, a_screenheight, 0x0B00AB , , fast
+	PixelSearch, FoundX, FoundY, 1776 , a_screenheight/2 , a_screenwidth, a_screenheight, 0x3110E6 , , fast
 		
+	sleep 100
+	
+	if (foundx > 0)
+		break
+		
+}
 
-			sendinput {esc}
-			sleep 500
+tooltip
+
+FoundY := FoundY + 10
+mouseclick , left , %FoundX%, %FoundY%
+/*
+sleep 250
+mouseclick, left, 0 , 10 ,1, , , R			
+sleep 250
+*/		
+	;mouseclick , left , 1827 , 616 , 1
+	
+	;msgbox,,, wait for send order ,  1
+	
+	loop
+	{	
+		try
+		{	
+			Clipboard := "" ;"
+			While (Clipboard != "")
+				sleep 10
 			
-	}
-	
+			sendinput {ctrl down}ac{ctrl up}
+			sleep 250
+			clipwait, 0.5
+			
 
-	
-	;msgbox found
-	mousey = 650
-		;mousey = 850
-
-	Loop, 15
-	{
-		tooltip , %a_linenumber%
-		mouseclick, left, 1036 , %mousey% ,1
-		;mouseclick, left, 1297 , %mousey% ,1
-		mousey := mousey + 20
-	}
-	
-	sleep 500
-
-	;mouseclick, left, 1093 , 180 , 1
-
-	IfWinExist, dashboard.virtualbrokers.com says ;ahk_class MozillaWindowClass ahk_exe firefox.exe
-		{
-			winactivate, dashboard.virtualbrokers.com says ;ahk_class MozillaWindowClass ahk_exe firefox.exe
-			winwaitactive, dashboard.virtualbrokers.com says ;ahk_class MozillaWindowClass ahk_exe firefox.exe
-			sendinput {enter}
+			ifinstring ,   Clipboard , send order
+					break	
+			
 			sleep 100
 		}
-
-	mousey = 430
-	Loop, 5
-	{
-		tooltip , %a_linenumber%
-		sendinput {esc}
-		sleep 100
-		;mouseclick, left, 1275 , %mousey% ,1
-		;mousey := mousey + 20
 	}
+		
+loop, 100
+{
+	tooltip , wait for send order %a_index% 
+	foundx := 0
+	
+	;PixelSearch, FoundX, FoundY, 1700 , a_screenheight/2 , a_screenwidth, a_screenheight, 0x0B00AB , , fast
+	PixelSearch, FoundX, FoundY, 1776 , a_screenheight/2 , a_screenwidth, a_screenheight, 0x3110E6 , , fast
+		
+	sleep 100
+	
+	if (foundx > 0)
+		break
+	
+	;msgbox,,, %a_index%,  1
+}
 
-	tooltip
-gosub VBliquidate
+tooltip
 
-return ;====================================================================================================================================================================================================== 
+FoundY := FoundY + 10
+mouseclick , left , %FoundX%, %FoundY%
+/*
+sleep 250
+mouseclick, left, 0 , 10 ,1, , , R			
+sleep 250
+*/
+	gosub VBliquidate
+
+return
 
 killFileExplorer:
 
@@ -813,639 +588,4 @@ loop,
 
 settimer, killFileExplorer, 500
 	
-return ;====================================================================================================================================================================================================== 
-
-resendorder:
-winactivate, ahk_exe EXCEL.EXE
-	winwaitactive, ahk_exe EXCEL.EXE
-
-		Clipboard := ""
-		While (Clipboard != "")
-			Sleep, 10
-		
-		sleep 100
-		
-		sendinput {up}
-	
-	gosub VBgolong	
-		
-return ;====================================================================================================================================================================================================== 
-
-
-
-;achat
-#F12::
-VBgolong:
-golong:
-
-	CoordMode, mouse, screen
-	CoordMode, tooltip, screen
-	CoordMode, pixel, screen
-
-settimer, killFileExplorer, 500
-
-theaccount = RRSP
-theaccount = margin
-
-SetDefaultMouseSpeed , 0
-
-;WinActivate, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-
-loop,
-{
-tooltip , %a_linenumber%
-	winactivate, ahk_exe EXCEL.EXE
-	winwaitactive, ahk_exe EXCEL.EXE
-
-	clipboard =
-
-	loop, 20
-	{
-	tooltip , %a_linenumber%
-		Clipboard := ""
-		While (Clipboard != "")
-		Sleep, 10
-		
-		ifwinexist  ,  Microsoft Excel ,  free up space
-			ControlSend , Button1, {esc},   Microsoft Excel ,  free up space
-	
-	
-		ifwinexist  ,  Microsoft Excel ,  clipboard
-			ControlSend , Button1, {esc},   Microsoft Excel ,  clipboard
-			
-		sleep 100
-		sendinput {down}{ctrl down}c{ctrl up}
-		sleep 250
-		clipwait, 1
-		ifinstring, Clipboard , ,
-			Break
-		sleep 250
-		
-		
-		ifwinexist  , Microsoft Excel ahk_class #32770 ,  Cannot open the Clipboard
-		{
-			winactivate, Microsoft Excel ahk_class #32770 , Cannot open the Clipboard
-			controlClick, OK , Microsoft Excel ahk_class #32770, Cannot open the Clipboard
-			winkill, Microsoft Excel ahk_class #32770, Cannot open the Clipboard
-			sendinput {esc}
-			sendinput {enter}
-		}
-		
-		
-	}
-
-tooltip , %a_linenumber% , 0 , 0
-;msgbox,,, %a_linenumber% ,1
-
-ifnotinstring, Clipboard , ,
-	{
-		;sendinput {ctrl down} {up 10} {ctrl up}
-		;gosub 
-		gosub restartscript
-	}
-	
-	tooltip , %a_linenumber% , 0 , 0
-	
-	ifnotinstring, Clipboard , LONG
-		{
-			ifnotinstring, Clipboard , SHORT
-			return
-		}
-		
-tooltip , %a_linenumber% , 0 , 0
-;msgbox,,, %a_linenumber% ,1	
-
-	StringReplace, clipboard , clipboard , `n, , All
-	StringReplace, clipboard , clipboard , `r,  , All
-			
-	StringSplit, orderdata, clipboard , `, , 
-
-	islong := regexreplace(orderdata1 , "(.*)0LONG", "")
-	isshort := regexreplace(longshort , "0SHORT(.*)", "")
-
-ThelongSignals := regexreplace(orderdata1 , "LONG(.*)", "")
-;msgbox %ThelongSignals%
-
-ifnotinstring, clipboard, LONG
-	return 
-tooltip , %a_linenumber% , 0 , 0
-;msgbox,,, %a_linenumber% ,1	
-
-ifinstring, clipboard, bearish ;ifnotinstring, clipboard, bullish
-		gosub golong
-		
-ifinstring, clipboard, underSMA200
-		1 = 1 ; gosub golong
-		
-tooltip , %a_linenumber% , 0 , 0
-;msgbox,,, %a_linenumber% ,1	
-
-
-;msgbox %clipboard%
-
-ifinstring, clipboard, bullish
-{
-tooltip , %a_linenumber% , 0 , 0
-;msgbox,,, %a_linenumber% ,1
-
-	dollaramount := orderdata2*2
-	thelimit:= orderdata4*0.92 ;  VB underSMA200
-	if (ThelongSignals <3)
-		gosub golong
-}
-
-ifnotinstring, clipboard, bullish
-{
-	dollaramount := orderdata2*2
-	thelimit:= orderdata4*0.92 ; VB underSMA200
-	if (ThelongSignals <3)
-		gosub golong
-}
-
-ifinstring, clipboard, overSMA200 
-{
-	dollaramount := orderdata2*2
-	thelimit := orderdata4*0.96 ; VB overSMA200
-}
-
-theDIP:= orderdata5
-theDIP := RegExReplace( theDIP , "(.*)_" , "") 
-theDIP := RegExReplace( theDIP , ",(.*)" , "") 
-
-ifinstring, clipboard, underSMA200
-{
-	DIPlimit := orderdata4*(1.01 - 2*theDIP ) ; 0.94 ; IB overSMA200
-	Minlimit := orderdata4*(1.01 - 0.08 )
-	thelimit := min( DIPlimit , Minlimit)
-	thelimit := orderdata4*(1.01 - 0.08 )
-}
-
-ifinstring, clipboard, overSMA200
-{
-	DIPlimit := orderdata4*(1.01 - theDIP ) ; 0.94 ; IB overSMA200
-	Minlimit := orderdata4*(1.01 - 0.08 )
-	thelimit := min( DIPlimit , Minlimit)
-	thelimit := orderdata4*(1.01 - 0.07 )
-}
-
-;msgbox ,,,%orderdata4%`n%theDIP%`n%thelimit% ,1
-
-	thestock := regexreplace(orderdata3, "_" , "-" )
-	theaccount:= orderdata6	
-	
-	;msgbox %theaccount%
-	
-	if (thelimit <=10)
-	{
-		;MSGBOX 	,,, %thelimit% (thelimit <=10) ,0.2
-		tooltip , %thelimit% (thelimit <=10) 
-		gosub golong
-	}	
-
-
-tooexpensive := dollaramount * 1.1
-	if (thelimit >= tooexpensive )
-	{
-		;MSGBOX 	,,, %thelimit% (thelimit >= %tooexpensive% ) ,0.2
-		tooltip , %thelimit% (thelimit >= %tooexpensive% )
-		gosub golong
-	}
-		
-		
-		
-		
-	;if (thelimit >=100)
-		;gosub golong
-		
-	;msgbox -%dollaramount%-%thestock%-%thelimit%-
-	
-	;msgbox _%orderdata2%_%orderdata3%_%orderdata4%_
-
-/*
-	dollaramount := RegExReplace(clipboard, "¤(.*)" , "")
-	thelimit:= RegExReplace(clipboard, "(.*)_" , "")
-	thelimit:= RegExReplace(thelimit, "-(.*)" , "")
-	;msgbox -%thelimit%-
-	thestock := RegExReplace(clipboard, "(.*)¤" , "")
-	thestock := RegExReplace(thestock, "_(.*)" , "") 
-*/
-	
-	tooltip, %thestock%`n%orderdata4%`n%theDIP%`n%thelimit%, 520 , 285
-
-;msgbox ,,,`n%orderdata4%`n%theDIP%`n%thelimit% ,1
-
-
-enterbuyorder:	
-	/*
-	WinMaximize  ,  Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-	WinActivate, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-	winwaitactive, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-	*/
-	
-SetTitleMatchMode, RegEx
-
-wintitle := "Virtual Brokers .*Microsoft.*Edge.*"
-wintitle :=  "Slimjet" ;ahk_class Slimjet_WidgetWin_1
-wintitle :=  "Virtual Brokers - Slimjet" ;ahk_class Slimjet_WidgetWin_1
-
-Winactivate, %wintitle% , ;Chrome Legacy Window ; , - Google Chrome
-winwaitactive , %wintitle% , ,3
-
-sendinput {ctrl down}1{home 5}{ctrl up}{esc}
-
-	
-Loop, 20
-{
-	tooltip , %a_linenumber%
-		if (a_index >19)
-			gosub resendorder
-
-		/*
-		WinActivate, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-		winwaitactive, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-		*/
-		SetTitleMatchMode, RegEx
-
-		wintitle := "Virtual Brokers .*Microsoft.*Edge.*"
-		wintitle :=  "Slimjet" ;ahk_class Slimjet_WidgetWin_1
-		wintitle :=  "Virtual Brokers - Slimjet" ;ahk_class Slimjet_WidgetWin_1
-
-		Winactivate, %wintitle% , ;Chrome Legacy Window ; , - Google Chrome
-		winmaximize, %wintitle% 
-		winwaitactive , %wintitle% , ,3
-
-		MouseClick, left, 21 , 161 , 1
-			
-		sendinput {home 5}{esc}
-		sleep 100
-
-		MouseClick, left, 97 , 214 , 3
-		
-		sendinput ^c
-		clipwait, 0.5
-		sleep 100
-		
-		ifinstring, clipboard, Account
-			break
-
-		sendinput {home 5}{esc}
-		
-		MouseClick, left, 1135 , 440 , 1
-		
-		sleep 500
-}
-	
-	MouseClick, left, 1250 , 247 , 1
-
-	MouseClick, left,1421 , 326 , 1
-	
-	;click USD
-	MouseClick, left,1247 , 241 , 1
-	
-	MouseClick, left, 1048 , 313 , 1
-	
-	tooltip, %theaccount%`n%thestock%`n%orderdata4%`n%theDIP%`n%thelimit%, 636 , 262
-	MouseClick, left, 616 , 238 , 1
-
-	sleep 100
-
-	/*
-	;select Margin
-	if (theaccount = "Margin")
-		sendinput {up 4}{down 1}{tab}
-	;select RRSP	
-	it (theaccount = "RRSP")
-		sendinput {up 4}{down 2}{tab}
-	*/
-
-
-	sendinput {up 4}
-	sleep 100
-	send %theaccount%
-
-	MouseClick, left, 1047 , 274 , 1
-;msgbox %a_linenumber%
-	sleep 100
-		
-		
-	;MouseClick, left, 710 , 430 , 2
-
-	
-loop, 20
-{
-tooltip , %a_linenumber%
-	MouseClick, left, 590 , 330 , 3
-;msgbox %a_linenumber%
-	clipboard =
-		sendinput ^a{del}%thestock%{enter}^a^c
-			sleep 100
-		if (clipboard = thestock)
-		break
-
-	sleep 100		
-}
-
-;gosub golong
-
-	sleep 100
-	
-	MouseClick, left, 596 , 311 , 2
-	;msgbox %a_linenumber%
-	;MouseClick, left, 650 , 298 , 1
-;msgbox %a_linenumber%
-	;MouseClick, left, 1065 , 294 , 1
-	;msgbox %a_linenumber%
-
-Loop, 20
-	{
-		tooltip , %a_linenumber%
-		if (a_index >19)
-			gosub resendorder
-		/*
-			WinActivate, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-			winwaitactive, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-		*/
-			SetTitleMatchMode, RegEx
-
-			wintitle := "Virtual Brokers .*Microsoft.*Edge.*"
-			wintitle :=  "Virtual Brokers - Slimjet" ;ahk_class Slimjet_WidgetWin_1
-
-			Winactivate, %wintitle% , ;Chrome Legacy Window ; , - Google Chrome
-			winwaitactive , %wintitle% , ,3
-
-			MouseClick, left, 21 , 161 , 1
-;msgbox %a_linenumber%
-		clipboard =
-		;mouseclick, left, 1195 , 323 , 3
-		mouseclick, left, 996 , 502 , 3
-		
-	;msgbox %a_linenumber%
-		sendinput {ctrl down}ac{ctrl up}
-		sleep 100
-
-		tooltip , %a_linenumber%`n%thestock%`n%orderdata4%`n%theDIP%`n%thelimit%
-		clipwait, 1
-
-			ifinstring, Clipboard, Bid Size
-				{
-				ifinstring, Clipboard, USD		
-					break
-				}
-		;mouseclick , left,  1218 , 356 , 1
-		
-		ifnotinstring, Clipboard, USD		
-			MouseClick, left,1247 , 241 , 1
-			
-		tooltip , %a_linenumber%`n%thestock%`n%orderdata4%`n%theDIP%`n%thelimit%
-		
-		mouseclick, left, 596 , 335 , 2
-		mouseclick, left, 1135 , 444 , 1
-	
-	}
-
-
-	;msgbox %a_linenumber%
-	;msgbox %a_linenumber%clipboardnn%clipboard%
-	StringReplace, clipboard , clipboard , `n, %a_space% , All
-	
-	StringReplace, clipboard , clipboard , `r, %a_space% , All
-	StringReplace, clipboard , clipboard , `, , . , All
-
-	clipboard := regexreplace(clipboard , "Cours acheteur", "")
-	clipboard := regexreplace(clipboard , "Cours vendeur", "")
-	clipboard := regexreplace(clipboard , "Dernière", "")
-
-	Accountsize := regexreplace(clipboard , "(.*)Net Equity \(combined\): \$", "")
-	Accountsize := regexreplace(Accountsize , "Converter(.*)", "")
-	Accountsize := regexreplace(Accountsize , " USD(.*)", "")
-	StringReplace, Accountsize , Accountsize , . ,  , All
-	StringReplace, Accountsize , Accountsize , `, ,  , All
-	Accountsize := round(Accountsize/100,2)
-	;msgbox Accountsize=%Accountsize%
-
-	if (Accountsize = 0)
-		Accountsize = 50000
-		
-	;Margin (combined): 
-	TheMargin := regexreplace(clipboard , "(.*)Margin \(combined\): \$", "")	
-	TheMargin := regexreplace(TheMargin , "Converter(.*)", "")
-	TheMargin := regexreplace(TheMargin , " USD(.*)", "")
-	StringReplace, TheMargin , TheMargin , . ,  , All
-	StringReplace, TheMargin , TheMargin , `, ,  , All	
-	StringReplace, TheMargin , TheMargin , . ,  , All
-	TheMargin := round(TheMargin/100,2)
-	
-	;msgbox TheMargin=%TheMargin%
-	
-	dollaramount := round(TheMargin/10,2)
-	;msgbox ,,,%dollaramount%,1
-
-if (dollaramount > Accountsize/100)
-		dollaramount := Accountsize/100
-
-	clipboard := regexreplace(clipboard , "TransactionVolume(.*)", "")
-	clipboard := regexreplace(clipboard , "(.*)Bid", "")
-	StringReplace, clipboard , clipboard , %a_space%,  , All
-	;msgbox %a_linenumber%clipboardnn%clipboard%
-	bid := regexreplace(clipboard , "Ask(.*)", "")
-	last := regexreplace(clipboard , "(.*)Last", "")
-
-
-	if (bid <= thelimit)
-		limit := bid
-	Else
-		limit := thelimit
-
-	
-	limit := regexreplace(limit , " (.*)","")
-	;msgbox bid: -%bid%-nn last: %last%nn thelimit: %thelimit% limit: %limit%
-
-	limit := round(0.999*limit,2)
-	;msgbox bid: -%bid%-nn last: %last%nn thelimit: %thelimit% limit: %limit%
-
-	if (limit <= 0 or not limit)
-		gosub golong
-	
-	;shares := Floor(limit)
-	
-	;msgbox dollaramount: -%dollaramount%-
-
-
-	shares := ceil(dollaramount / Limit)
-	
-	;shares := 1
-	
-	;msgbox shares %shares%
-	if (theaccount = "Margin")
-	;shares := 1
-
-	if (shares < 1)
-		gosub golong ; shares := 1
-
-	;msgbox shares %shares% := dollaramount -%dollaramount%- / Limit -%Limit%-
-
-	;MouseClick, left, 630 , 400 , 2
-	MouseClick, left, 590 , 330 , 1
-	sendinput {tab 2}
-
-	sendinput %shares%{tab}
-	sleep 100
-	sendinput %thestock%{tab 2}
-	sleep 100
-	sendinput l
-	sleep 100
-	sendinput {tab}
-	;MouseClick, left, 960 , 400 , 3
-	sleep 250
-
-	sendinput %limit%{tab}{up 4}
-	sleep 100
-
-	mouseclick, left, 1295 , 326 , 1
-
-	Loop, 40 
-	{
-		tooltip , %a_linenumber%
-		if (a_index >39)
-			gosub resendorder
-			
-		/*
-			WinActivate, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-			winwaitactive, Virtual Brokers — Mozilla Firefox ahk_class MozillaWindowClass
-		*/	
-			SetTitleMatchMode, RegEx
-
-		wintitle := "Virtual Brokers .*Microsoft.*Edge.*"
-		wintitle :=  "Virtual Brokers - Slimjet" ;ahk_class Slimjet_WidgetWin_1
-
-		Winactivate, %wintitle% , ;Chrome Legacy Window ; , - Google Chrome
-		winwaitactive , %wintitle% , ,3
-
-		MouseClick, left, 21 , 161 , 1
-
-		/*
-		mouseclick, left, 1292 , 324 , 1
-		sleep 250	
-		mouseclick, left, 1060 , 458 , 1
-		*/
-	
-	
-		mousey = 700
-	
-		Loop, 40 
-		{
-			tooltip , %a_linenumber%
-			mouseclick, left, 1295 , 326 , 1
-			
-			mouseclick, left, 844 , %mousey% , 1
-			
-		
-			;mouseclick, left, 1167 , 410 , 3
-
-			;mouseclick, left, 1632 , 434 , 1
-			;sleep 1000
-		
-			clipboard =
-				sendinput {ctrl down}a{ctrl up}{ctrl down}c{ctrl up}
-				sleep 100
-			
-				tooltip , %a_linenumber%`n%thestock%`n%orderdata4%`n%theDIP%`n%thelimit%
-				clipwait, 0.2
-			
-			if clipboard
-				break
-			mousey := mousey - 20
-		}
-	
-	
-			ifinstring, Clipboard, A technical difficulty has been detected.
-			{	
-				sendinput {esc}
-				;mouseclick, left, 	1348 , 467 , 1
-			}	
-			
-			ifinstring, Clipboard, Estimated Commission:$
-			{
-				ifinstring, Clipboard, %theaccount%
-				{
-					ifinstring, Clipboard, limit
-					{
-						ifnotinstring, Clipboard, Estimated Commission:Loading
-						{	
-							ifnotinstring, Clipboard, ()
-								break
-						}
-					}
-				}
-			}
-
-			sleep 250
-	}
-		
-		
-	tooltip , Send Order`n%thestock%`n%orderdata4%`n%theDIP%`n%thelimit%
-		ifnotinstring, Clipboard, %theaccount%
-			{
-				msgbox,,, ERROR wrong account`nRETRYING,1
-				gosub resendorder
-			}
-
-
-		/*
-		ifinstring, Clipboard, market
-			{
-				msgbox,,,ERROR not limit order`nRETRYING,1
-				gosub resendorder
-			}
-
-
-		ifnotinstring, Clipboard, limit
-			{
-				msgbox,,, ERROR not limit order`nRETRYING,1
-				gosub resendorder
-			}
-			*/
-
-	tooltip , Send Order`n%thestock%`n%orderdata4%`n%theDIP%`n%thelimit%
-	;msgbox found
-
-	mousey = 650
-		;mousey = 850
-
-	Loop, 15
-	{
-		tooltip , %a_linenumber%
-		mouseclick, left, 1036 , %mousey% ,1
-		;mouseclick, left, 1297 , %mousey% ,1
-		mousey := mousey + 20
-	}
-		
-	sleep 100
-
-	;mouseclick, left, 1093 , 180 , 1
-
-	IfWinExist, dashboard.virtualbrokers.com says ;ahk_class MozillaWindowClass ahk_exe firefox.exe
-		{
-			winactivate, dashboard.virtualbrokers.com says ;ahk_class MozillaWindowClass ahk_exe firefox.exe
-			winwaitactive, dashboard.virtualbrokers.com says ;ahk_class MozillaWindowClass ahk_exe firefox.exe
-			sendinput {enter}
-			sleep 100
-		}
-	
-	mousey = 430
-	Loop, 5
-	{
-		tooltip , %a_linenumber%
-		sendinput {esc}
-		sleep 100
-		;mouseclick, left, 1275 , %mousey% ,1
-		;mousey := mousey + 20
-	}
-
-	tooltip
-}
-
-settimer, killFileExplorer, off
-
-
 return ;====================================================================================================================================================================================================== 
