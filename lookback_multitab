@@ -1,0 +1,122 @@
+
+#!PgDn::
+
+;msgbox ,,, go , 1
+
+
+mousegetpos, mousex, mousey
+
+clipboard := ""
+While clipboard
+	sleep 10
+/*	
+	{
+	clipboard := ""
+
+	tooltip, clearing clipboard , 0, 0
+	Sleep 100
+	
+	}
+*/
+
+loop, 100 ; While !clipboard ; the loop will break once the clipboard is populated
+{
+tooltip , clipboard %clipboard% , 0 ,0
+	sendinput {click %mousex% %mousey% 1}{ctrl down}ac{ctrl up}
+	Sleep 100 ; gives time for the clipboard to be populated, especially if it is large
+	clipwait , 1
+	Sleep 100
+
+if clipboard
+	break
+}
+
+tooltip 
+;msgbox ,,, %clipboard% , 1
+
+loop, 9 ; While !clipboard ; the loop will break once the clipboard is populated
+{
+	sendinput {click %mousex% %mousey% 1}{ctrl down}ava{pgdn}{ctrl up}
+	Sleep 200
+}
+
+
+sendinput {ctrl down}{pgdn}{ctrl up}
+
+return
+
+
+
+#!enter::
+
+;msgbox ,,, go , 1
+
+
+mousegetpos, mousex, mousey
+
+clipboard := ""
+While clipboard
+	sleep 10
+/*	
+	{
+	clipboard := ""
+
+	tooltip, clearing clipboard , 0, 0
+	Sleep 100
+	
+	}
+*/
+
+loop, 100 ; While !clipboard ; the loop will break once the clipboard is populated
+{
+tooltip , clipboard %clipboard% , 0 ,0
+	sendinput {click %mousex% %mousey% 1}{ctrl down}ac{ctrl up}
+	Sleep 100 ; gives time for the clipboard to be populated, especially if it is large
+	clipwait , 1
+	Sleep 100
+
+if clipboard
+	break
+}
+
+tooltip 
+;msgbox ,,, %clipboard% , 1
+
+loop, 9 ; While !clipboard ; the loop will break once the clipboard is populated
+{
+	sendinput {click %mousex% %mousey% 1}{ctrl down}ava{ctrl up}{enter}{ctrl down}{pgdn}{ctrl up}
+	Sleep 200
+}
+
+
+sendinput {ctrl down}{pgdn}{ctrl up}
+
+return
+
+#!space::
+
+mousegetpos, mousex, mousey
+
+theamount := 10
+clipboard := 10
+
+loop, 9
+{
+
+	While (clipboard <> theamount )
+	{
+		clipboard := theamount
+		sleep 10
+	}
+
+	
+	;mouseclick, left , %mousex% , %mousey% , 1
+	
+	sendinput {click %mousex% %mousey% 1}{ctrl down}ava{pgdn}{ctrl up}
+	
+	theamount := 2*theamount
+	sleep 200
+}
+
+sendinput {ctrl down}{pgdn}{ctrl up}
+return
