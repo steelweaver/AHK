@@ -1,0 +1,35 @@
+#space::
+
+SetTitleMatchMode, 2
+
+if not WinExist("International Speculator Portfolio")
+	run , C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\Slimjet\slimjet.exe  --app="https://members.caseyresearch.com/international-speculator/portfolio"
+if not WinExist("Strategic Investor Portfolio")
+	run , C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\Slimjet\slimjet.exe --app="https://members.caseyresearch.com/strategic-investor/portfolio"
+if not WinExist("Strategic Trader Portfolio")
+	run , C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\Slimjet\slimjet.exe --app="https://members.caseyresearch.com/strategic-trader/portfolio"
+
+winactivate , International Speculator Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+;winwaitactive, International Speculator Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+
+
+loop,
+{
+
+	ControlSend , ,  {click 100 100}{ctrl down}ac{ctrl up}, International Speculator Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+	clipwait, 1
+	ifinstring, clipboard , Investment
+		break
+
+	sleep 100
+}
+
+;winactivate , Strategic Investor Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+
+;#winactivate , Strategic Trader Portfolio  ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+
+
+
+
+msgbox %clipboard%
+return
