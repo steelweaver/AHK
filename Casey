@@ -103,5 +103,4 @@ Loop, Parse, AllPortfolio , `n
 msgbox ,,,%clipboard%,1
 
 
-exitapp
 return
