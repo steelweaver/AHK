@@ -5,10 +5,16 @@ coordmode, mouse, relative
 coordmode, pixel, relative
 SetTitleMatchMode, 2
 
+
+start:
+
 	run , C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\Slimjet\slimjet.exe  --app="https://members.caseyresearch.com/portfolio/" ,, max
 
 	loop, 100
 	{
+		clipboard := ""
+		While clipboard
+		sleep 10
 		winactivate , Portfolios
 		
 		ControlSend , ,  {click 100 100}{ctrl down}ac{ctrl up}, Portfolios ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
@@ -19,7 +25,9 @@ SetTitleMatchMode, 2
 		sleep 1000
 	}
 	
-winclose, Portfolios ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+ifwinnotactive, Portfolios
+	exitapp		
+		
 	
 StringReplace, clipboard , clipboard , `n, _, All
 StringReplace, clipboard , clipboard , `r, _, All
@@ -36,6 +44,7 @@ wincount = 0
 Titles := clipboard
 Loop, Parse, Titles , _
 {
+
 	if ( StrLen(a_loopfield) >= 5 )
 	{
 		url := RegExReplace( a_loopfield , "(.*)CASEY " , "") 
@@ -45,6 +54,7 @@ Loop, Parse, Titles , _
 		url = https://members.caseyresearch.com/%url%/portfolio
 
 		;msgbox ,,,%url% ,1 
+		winclose, Portfolios ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
 		run , C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\Slimjet\slimjet.exe  --app="%url%" , , max , PIDCasey
 		
 		wincount := wincount + 1
@@ -74,7 +84,7 @@ Loop, %wincount%
 
 			ifinstring, clipboard , Select Portfolio
 			{	
-				msgbox ,,,%clipboard%,1
+				;msgbox ,,,%clipboard%,1
 				AllPortfolio = %AllPortfolio%`n`n%clipboard%
 				winclose Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
 				break
@@ -101,6 +111,5 @@ Loop, Parse, AllPortfolio , `n
 
 
 msgbox ,,,%clipboard%,1
-
 
 return
