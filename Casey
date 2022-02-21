@@ -1,35 +1,107 @@
 #space::
 
+#singleinstance, force
+coordmode, mouse, relative
+coordmode, pixel, relative
 SetTitleMatchMode, 2
 
-if not WinExist("International Speculator Portfolio")
-	run , C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\Slimjet\slimjet.exe  --app="https://members.caseyresearch.com/international-speculator/portfolio"
-if not WinExist("Strategic Investor Portfolio")
-	run , C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\Slimjet\slimjet.exe --app="https://members.caseyresearch.com/strategic-investor/portfolio"
-if not WinExist("Strategic Trader Portfolio")
-	run , C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\Slimjet\slimjet.exe --app="https://members.caseyresearch.com/strategic-trader/portfolio"
+	run , C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\Slimjet\slimjet.exe  --app="https://members.caseyresearch.com/portfolio/" ,, max
 
-winactivate , International Speculator Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
-;winwaitactive, International Speculator Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+	loop, 100
+	{
+		winactivate , Portfolios
+		
+		ControlSend , ,  {click 100 100}{ctrl down}ac{ctrl up}, Portfolios ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+		clipwait, 1
+		ifinstring, clipboard , My Subscriptions
+			break
+
+		sleep 1000
+	}
+	
+winclose, Portfolios ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+	
+StringReplace, clipboard , clipboard , `n, _, All
+StringReplace, clipboard , clipboard , `r, _, All
+
+while InStr(clipboard, "__")
+	StringReplace, clipboard , clipboard , __, _, All
+
+clipboard := RegExReplace( clipboard , "(.*)Portfolios" , "") 
+clipboard := RegExReplace( clipboard , "About(.*)" , "") 
+clipboard := RegExReplace( clipboard , "(.*)_Casey Research_" , "") 
 
 
-loop,
+wincount = 0
+Titles := clipboard
+Loop, Parse, Titles , _
 {
+	if ( StrLen(a_loopfield) >= 5 )
+	{
+		url := RegExReplace( a_loopfield , "(.*)CASEY " , "") 
 
-	ControlSend , ,  {click 100 100}{ctrl down}ac{ctrl up}, International Speculator Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
-	clipwait, 1
-	ifinstring, clipboard , Investment
-		break
+		StringReplace, url , url , %a_space% , -, All
 
-	sleep 100
+		url = https://members.caseyresearch.com/%url%/portfolio
+
+		;msgbox ,,,%url% ,1 
+		run , C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\Slimjet\slimjet.exe  --app="%url%" , , max , PIDCasey
+		
+		wincount := wincount + 1
+		
+		;WinWait ahk_pid %PIDCasey%
+		
+		AllPID = %allPID%`,%PIDCasey%
+	}
 }
 
-;winactivate , Strategic Investor Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+AllPortfolio =
 
-;#winactivate , Strategic Trader Portfolio  ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+Loop, %wincount%
+{
+	loop, 100
+	{
+		winmaximize Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+		winactivate Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+		ifwinactive, Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+		{
+			clipboard := ""
+			While clipboard
+			sleep 10
+
+			sendinput {click 11 20 }{ctrl down}ac{ctrl up}
+			clipwait, 1
+
+			ifinstring, clipboard , Select Portfolio
+			{	
+				msgbox ,,,%clipboard%,1
+				AllPortfolio = %AllPortfolio%`n`n%clipboard%
+				winclose Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+				break
+			}
+		}	
+		sleep 1000
+	}
+}
+
+clipboard = %AllPortfolio%
+
+	filedelete , c:\users\%A_UserName%\Downloads\CaseyBuy.csv
+	filedelete , c:\users\%A_UserName%\Downloads\Caseysell.csv
+		
+Loop, Parse, AllPortfolio , `n
+{
+	ifinstring  , a_loopfield, buy
+		fileappend, %a_loopfield%`n, c:\users\%A_UserName%\Downloads\CaseyBuy.csv
+	ifinstring  , a_loopfield, sell
+		fileappend, %a_loopfield%`n, c:\users\%A_UserName%\Downloads\Caseysell.csv
+	ifinstring  , a_loopfield, hold
+		fileappend, %a_loopfield%`n, c:\users\%A_UserName%\Downloads\Caseysell.csv
+}
 
 
+msgbox ,,,%clipboard%,1
 
 
-msgbox %clipboard%
+exitapp
 return
