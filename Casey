@@ -68,6 +68,64 @@ Loop, Parse, Titles , _
 AllPortfolio =
 
 Loop, %wincount%
+
+coordmode, mouse, relative
+coordmode, pixel, relative
+SetTitleMatchMode, 2
+
+	run , C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\Slimjet\slimjet.exe  --app="https://members.caseyresearch.com/portfolio/" ,, max
+
+	loop, 100
+	{
+		winactivate , Portfolios
+		
+		ControlSend , ,  {click 100 100}{ctrl down}ac{ctrl up}, Portfolios ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+		clipwait, 1
+		ifinstring, clipboard , My Subscriptions
+			break
+
+		sleep 1000
+	}
+	
+winclose, Portfolios ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
+	
+StringReplace, clipboard , clipboard , `n, _, All
+StringReplace, clipboard , clipboard , `r, _, All
+
+while InStr(clipboard, "__")
+	StringReplace, clipboard , clipboard , __, _, All
+
+clipboard := RegExReplace( clipboard , "(.*)Portfolios" , "") 
+clipboard := RegExReplace( clipboard , "About(.*)" , "") 
+clipboard := RegExReplace( clipboard , "(.*)_Casey Research_" , "") 
+
+
+wincount = 0
+Titles := clipboard
+Loop, Parse, Titles , _
+{
+	if ( StrLen(a_loopfield) >= 5 )
+	{
+		url := RegExReplace( a_loopfield , "(.*)CASEY " , "") 
+
+		StringReplace, url , url , %a_space% , -, All
+
+		url = https://members.caseyresearch.com/%url%/portfolio
+
+		;msgbox ,,,%url% ,1 
+		run , C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\Slimjet\slimjet.exe  --app="%url%" , , max , PIDCasey
+		
+		wincount := wincount + 1
+		
+		;WinWait ahk_pid %PIDCasey%
+		
+		AllPID = %allPID%`,%PIDCasey%
+	}
+}
+
+AllPortfolio =
+
+Loop, %wincount%
 {
 	loop, 100
 	{
@@ -84,7 +142,7 @@ Loop, %wincount%
 
 			ifinstring, clipboard , Select Portfolio
 			{	
-				;msgbox ,,,%clipboard%,1
+				msgbox ,,,%clipboard%,1
 				AllPortfolio = %AllPortfolio%`n`n%clipboard%
 				winclose Portfolio ahk_class Slimjet64_WidgetWin_1 ahk_exe slimjet.exe
 				break
