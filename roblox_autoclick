@@ -1,0 +1,24 @@
+
+capslock & backspace::
+
+	tooltip ,roblox autoclick , 0 ,0 
+	SetDefaultMouseSpeed , 0
+	coordmode, mouse, relative
+	
+	sleep 1
+
+
+loop
+{
+
+	winactivate,  ahk_exe RobloxPlayerBeta.exe
+	MouseGetPos, mousex, mousey
+	
+	MouseClick , left, %mousex%, %mousey% , 1
+
+  
+}
+
+tooltip
+
+return
