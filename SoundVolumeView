@@ -1,0 +1,17 @@
+
+tooltip , enabling OpenMove by Shokz Hands-Free AG Audio 
+
+IfNotExist, %a_scriptdir%\soundvolumeview-x64\SoundVolumeView.exe
+{	
+	tooltip , enabling OpenMove by Shokz Hands-Free AG Audio  - downloading https://www.nirsoft.net/utils/soundvolumeview-x64.zip
+	UrlDownloadToFile, https://www.nirsoft.net/utils/soundvolumeview-x64.zip , %a_scriptdir%\soundvolumeview-x64.zip
+
+	Source = %a_scriptdir%\soundvolumeview-x64.zip
+	Destination = %a_scriptdir%\soundvolumeview-x64
+
+    RunWait PowerShell.exe -NoExit -Command Expand-Archive -Path '%Source%' -DestinationPath '%Destination%';exit,%A_scriptDir%, Hide
+}
+
+runwait , C:\Users\garjo3\Downloads\soundvolumeview-x64\SoundVolumeView.exe /SetDefault "OpenMove by Shokz Hands-Free AG Audio\Device\Casque\Render" all
+;run , C:\Users\garjo3\Downloads\soundvolumeview-x64\SoundVolumeView.exe /SetDefault "2- Realtek(R) Audio\Device\Enceintes\Render" all
+
