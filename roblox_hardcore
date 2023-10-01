@@ -1,0 +1,46 @@
+#singleinstance, force
+SetTitleMatchMode, 2
+coordmode, tooltip, screen
+coordmode, mouse, screen
+DetectHiddenWindows, On
+
+tooltip ,roblox , 0 ,0 
+SetDefaultMouseSpeed , 0
+coordmode, mouse, relative
+
+SetKeyDelay, 0 ,100
+
+loop
+{
+
+	;send wwaaaae{click 1025 150}{click 1025 657}{click 950 775}{click 1025 885}
+	winactivate,  ahk_exe RobloxPlayerBeta.exe
+	winwaitactive,  ahk_exe RobloxPlayerBeta.exe
+	
+	;send ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwe
+	;send aaaaessssssssssssssssssssssssssssssssssssssssssssss
+	
+	send {d 40}
+	send {w 40}
+	
+	loop, 10
+	{
+	winactivate,  ahk_exe RobloxPlayerBeta.exe
+	;send wwwaaaaa ;e{click 1025 150}{click 1025 657}{click 950 775}{click 1025 885}
+		
+		
+		;send wwwaaaaaae{click 1025 140}{click 1025 657}{click 950 775}{click 1025 885} ;e{click 1025 150}{click 1025 657}{click 950 775}{click 1025 885}
+	}
+
+	send e{click 1025 150}{click 1025 657}{click 950 775}{click 1025 885}
+	send {esc}
+	sleep 1000
+	send r
+	sleep 1000 
+	send {enter}
+	sleep 10000
+	
+}
+
+tooltip
+exitapp
