@@ -1,46 +1,290 @@
 #singleinstance, force
 SetTitleMatchMode, 2
-coordmode, tooltip, screen
-coordmode, mouse, screen
 DetectHiddenWindows, On
-
-tooltip ,roblox , 0 ,0 
 SetDefaultMouseSpeed , 0
 coordmode, mouse, relative
+coordmode, tooltip, relative
 
-SetKeyDelay, 0 ,100
+SetKeyDelay, 0 ,50
 
 loop
 {
-
-	;send wwaaaae{click 1025 150}{click 1025 657}{click 950 775}{click 1025 885}
 	winactivate,  ahk_exe RobloxPlayerBeta.exe
 	winwaitactive,  ahk_exe RobloxPlayerBeta.exe
+	tooltip ,roblox %a_linenumber%, 0 ,0 
+
+	;send wwaaaae{click 1025 150}{click 1025 657}{click 950 775}{click 1025 885}
 	
 	;send ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwe
 	;send aaaaessssssssssssssssssssssssssssssssssssssssssssss
 	
-	send {d 40}
-	send {w 40}
+	send {click 1025 150 3}{click 1025 657 3}{click 950 775 3}{click 1025 885 3}{click 1080 780 3}{click 1180 480 3}{click 1060 600 3}
+	
+	send {d 150}
+	send {a 1}
+	send {w 50}
+	send {d 50}
+	
+	;send {click 950 775}
+	tooltip ,roblox %a_linenumber%, 0 ,0
+
+	loop, 15
+	{
+		send {click 1025 150 3}{click 1025 657 3}{click 950 775 3}{click 1025 885 3}{click 1080 780 3}{click 1180 480 3}{click 1060 600 3}
+		sleep 1000
+		tooltip ,roblox %a_linenumber% %a_index% , 0 ,0 
+	}
+
+	tooltip ,roblox %a_linenumber%, 0 ,0 
 	
 	loop, 10
 	{
 	winactivate,  ahk_exe RobloxPlayerBeta.exe
-	;send wwwaaaaa ;e{click 1025 150}{click 1025 657}{click 950 775}{click 1025 885}
+	;send wwwaaaaa ;e{click 1025 150}{click 1025 657}{click 950 775}{click 1025 885}wwwwwwwwwwwwwwwwwwwwwwwwwwww
 		
 		
 		;send wwwaaaaaae{click 1025 140}{click 1025 657}{click 950 775}{click 1025 885} ;e{click 1025 150}{click 1025 657}{click 950 775}{click 1025 885}
 	}
 
-	send e{click 1025 150}{click 1025 657}{click 950 775}{click 1025 885}
+	send e{click 1025 150}{click 1025 657}{click 950 775}{click 1025 885}{click 1060 600 3}
 	send {esc}
 	sleep 1000
 	send r
 	sleep 1000 
 	send {enter}
-	sleep 10000
+	tooltip ,roblox %a_linenumber%, 0 ,0 
+
+	loop, 10
+	{
+		sleep 1000
+		tooltip ,roblox %a_linenumber% %a_index% , 0 ,0 
+	}
+
+
+	tooltip ,roblox %a_linenumber%, 0 ,0 
 	
 }
 
 tooltip
+exitapp
+
+;run, C:\Users\garjo3\OneDrive - BuroVirtuel\Documents\jonathan\AutoHotkey\autoclick.ahk
+
+/*
+screen 604 , 440  , 0x809AC4 
+ relative 612 , 448 , 0x809AC4  wwwaaaaae
+
+	winactivate , ahk_exe RobloxPlayerBeta.exe, , , 
+	winwaitactive ,	ahk_exe RobloxPlayerBeta.exe, , , 
+	;ControlClick, x1634 y567, ahk_id 0x71c1a36,,,, NA
+	;ControlClick, x1634 y567, ahk_id 0x71c1a36,,,, NA
+
+	;ControlSend , ,  {click 1634 567}{space}, ahk_exe RobloxPlayerBeta.exe
+	;ControlSend , ,  {click 1634 567}{space}, ahk_exe RobloxPlayerBeta.exe
+
+	x := 1024 ; 727
+	y := 549 ; 769
+	
+	SendMouse_AbsoluteClick(x, y)
+
+	x := 1634 ; 727
+	y := 567 ; 769
+
+	SendMouse_AbsoluteClick(x, y)
+	;SendMouse_AbsoluteClick(x, y)
+	
+	x := 1308 
+	y :=  378  
+ 	SendMouse_AbsoluteClick(x, y)
+
+	winactivate , ahk_id %winid%
+	winwaitactive ,	ahk_id %winid%, , , 
+	
+	sleep 60000
+}
+	
+exitapp
+
+Setmousedelay -1
+setbatchlines -1
+
+x := 1634 ; 727
+y := 567 ; 769
+	
+loop,   
+{
+	WinGet, WinID,, A
+	MouseGetPos, initialx, initialy
+	SendMouse_AbsoluteClick(x, y)
+	;mousemove, %initialx%,   %initialy% , 0
+	winactivate , %winid%
+	sleep 1000
+}
+
+
+exitapp
+  
+x := 1634 ; 727
+y := 567 ; 769
+ 
+lParam := x | (y << 16)
+ 
+;SendMessage, 0x086 , 0x00000000 , 0x00000000, , ahk_exe RobloxPlayerBeta.exe	;NCACTIVATE SEND
+;SendMessage, 0x006 , 0x00000000 , 0x00000000, , ahk_exe RobloxPlayerBeta.exe	;ACTIVATE SEND
+;SendMessage, 0x01C , 0x00000000 , 0x00001774, , ahk_exe RobloxPlayerBeta.exe	;ACTIVATEAPP SEND
+;SendMessage, 0x281 , 0x00000000 , 0xC000000F, , ahk_exe RobloxPlayerBeta.exe	;IME_SETCONTEXT SEND
+ 
+SendMessage, 0x084 , 0x00000000 , %lParam%, , 	ahk_exe RobloxPlayerBeta.exe	;NCHITTEST SEND
+SendMessage, 0x020 , 0x00040708 , 0x02040001, , ahk_exe RobloxPlayerBeta.exe	;SETCURSOR SEND
+PostMessage, 0x200 , 0x00000000 , %lParam%, , 	ahk_exe RobloxPlayerBeta.exe	;MOUSEMOVE POST
+Sleep,100
+PostMessage, 0x201 , 0x00000002 , %lParam%, , 	ahk_exe RobloxPlayerBeta.exe	;LBUTTONDOWN POST
+SendMessage, 0x084 , 0x00000000 , %lParam%, , 	ahk_exe RobloxPlayerBeta.exe	;NCHITTEST SEND
+SendMessage, 0x020 , 0x00040708 , 0x02050001, , ahk_exe RobloxPlayerBeta.exe	;SETCURSOR SEND
+PostMessage, 0x202 , 0x00000000 , %lParam%, , 	ahk_exe RobloxPlayerBeta.exe	;LBUTTONUP POST
+
+SendMessage, 0x084 , 0x00000000 , %lParam%, , 	ahk_exe RobloxPlayerBeta.exe	;NCHITTEST SEND
+SendMessage, 0x020 , 0x00040708 , 0x02040001, , ahk_exe RobloxPlayerBeta.exe	;SETCURSOR SEND
+PostMessage, 0x200 , 0x00000000 , %lParam%, , 	ahk_exe RobloxPlayerBeta.exe	;MOUSEMOVE POST
+Sleep,100
+PostMessage, 0x201 , 0x00000002 , %lParam%, , 	ahk_exe RobloxPlayerBeta.exe	;LBUTTONDOWN POST
+SendMessage, 0x084 , 0x00000000 , %lParam%, , 	ahk_exe RobloxPlayerBeta.exe	;NCHITTEST SEND
+SendMessage, 0x020 , 0x00040708 , 0x02050001, , ahk_exe RobloxPlayerBeta.exe	;SETCURSOR SEND
+PostMessage, 0x202 , 0x00000000 , %lParam%, , 	ahk_exe RobloxPlayerBeta.exe	;LBUTTONUP POST
+
+exitapp
+
+
+if WinExist("Roblox"){
+	;MsgBox I am active
+	x := 727 ; coordinates
+	y := 769 ; coordinates
+	lParam := x & 0xFFFF | (y & 0xFFFF) << 16
+	PostMessage, 0x201, , %lParam%, , "Roblox" ;WM_LBUTTONDOWN
+	PostMessage, 0x202, , %lParam%, , "Roblox" ;WM_LBUTTONUP
+}
+
+
+exitapp
+
+if WinExist("Roblox"){
+    	WinActivate
+	;Click, 727, 769 ;pressing number 9
+	;sleep 500
+	;Click, 727, 769 ;pressing number 9
+	ControlClick, x727 y769, Roblox
+	sleep 500
+	ControlClick, x727 y769, Roblox
+}
+
+
+exitapp 
+loop, 10
+{
+
+	ControlSend, , {click 727 769} , Roblox
+	sleep 100
+	ControlClick, x727 y769, Roblox
+	
+	sleep 60000
+}
+
+exitapp
+
+
+SendMode InputThenPlay
+ 
+count = 100
+
+tickstart = %A_TickCount%
+
+;winactivate, roblox
+
+/*
+loop, 100
+{
+tooltip, fast autoclick autofire ,0 ,0
+	send {click}
+	MouseClick , left,, , 1, 0, , 
+	
+	MouseClick , left,, , 1, 0, , 
+	
+	sleep 10
+tooltip
+}
+*/
+
+loop, 100
+{
+tooltip, fast autoclick autofire ,0 ,0
+	send {click}
+	MouseClick , left,, , 1, 0, , 
+	
+	MouseClick , left,, , 1, 0, , 
+		sleep 10
+
+tooltip
+}
+
+;MouseClick , left,, , %count%, 0, , 
+
+tickend = %A_TickCount%
+
+
+MsgBox, % (tickend - tickstart) ; elapsed time in mws
+
+exitapp
+
+
+
+SendSpacebar()
+{ 
+	dllcall("keybd_event", int, 32, int, 57, int, 0, int, 0) ;SPACE down
+	dllcall("keybd_event", int, 32, int, 57, int, 1, int, 0) ;SPACE up
+}
+
+
+SendMouse_AbsoluteClick(x, y)  
+{
+	
+	initialx = 
+	initialy = 
+
+MouseGetPos, initialx, initialy
+
+While ! initialx ; the loop will break once the clipboard is populated
+{
+	if initialx
+	break
+}
+
+While ! initialy ; the loop will break once the clipboard is populated
+{
+	if initialy
+	break
+}
+
+	;send fast absolute mouse moves
+	;Absolute coords go from 0..65535 so we have to change to pixel coords
+    Static SysX := 65535 / A_ScreenWidth, SysY := 65535 / A_ScreenHeight
+    DllCall("mouse_event", "UInt", 0x8001, "UInt", x*SysX, "UInt", y*SysY)
+    DllCall("mouse_event", "UInt", 0x02) ; left button down
+    DllCall("mouse_event", "UInt", 0x04) ; left button up
+	
+	;dllcall("keybd_event", int, 32, int, 57, int, 0, int, 0) ;SPACE down
+	;dllcall("keybd_event", int, 32, int, 57, int, 1, int, 0) ;SPACE up
+	
+	DllCall("mouse_event", "UInt", 0x8001, "UInt", initialx*SysX, "UInt", initialy*SysY)
+	sleep 100
+	MouseGetPos, initialx, initialy
+}
+
+SendMouse_AbsoluteMove(x, y)
+{ ; send fast absolute mouse moves
+  ; Absolute coords go from 0..65535 so we have to change to pixel coords
+    Static SysX := 65535 / A_ScreenWidth, SysY := 65535 / A_ScreenHeight
+    ("mouse_event", "UInt", 0x8001, "UInt", x*SysX, "UInt", y*SysY)
+}
+
+#esc::
 exitapp
