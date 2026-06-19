@@ -1,0 +1,46 @@
+; --- mouse speed Settings ---
+normalSpeed := 12
+preciseSpeed := 1
+
+isPrecise := false
+
+
+; Either order
+~XButton1 & XButton2::
+SetPreciseMode(true)
+return
+
+~XButton2 & XButton1::
+SetPreciseMode(true)
+return
+
+; Detect release of either → turn off
+~*XButton1 up::
+~*XButton2 up::
+SetPreciseMode(false)
+return
+
+
+SetPreciseMode(state)
+{
+    global isPrecise, normalSpeed, preciseSpeed
+
+    ; Avoid redundant calls
+    if (state = isPrecise)
+        return
+
+    ; Only enable if BOTH are still held (safety check)
+    if (state)
+    {
+        if !(GetKeyState("XButton1","P") && GetKeyState("XButton2","P"))
+            return
+
+        isPrecise := true
+        SetMouseSpeed(preciseSpeed)
+    }
+    else
+    {
+        isPrecise := false
+        SetMouseSpeed(normalSpeed)
+    }
+}
