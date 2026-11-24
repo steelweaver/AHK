@@ -6,13 +6,21 @@ settitlematchmode, 2
 ; SetBatchLines, -1
 
 SetBatchLines, 20
+Loop, 254 {
+        vk := Format("vk{:02X}", A_Index)
+        ; Check logical state (without "P") so we catch keys held down by a script
+        if GetKeyState(vk) {
+            SendInput, {%vk% Up}
+        }
+	}
+	
 clipboard = 
 windowNames =
-randA := 1
-randB := 1
-randC := 2
+randA := 5
+randB := 6
+randC := 1
 randDmin := 1
-randDmax := 5
+randDmax := 6
 
 ;winminimizeall
 
@@ -21,12 +29,13 @@ randDmax := 5
 sleep 1000
 
 start()
-
+fileappend , a_linenumber %a_linenumber%`n , %a_scriptdir%\checkcolor.log
 reload
 
 exitapp
 
 start(){
+
 
 	;msgbox ,,, start,1
 	tooltip, %a_linenumber% , 0,0
@@ -69,6 +78,7 @@ start(){
 				sleep 100
 			}
 		}
+		fileappend , a_linenumber %a_linenumber%`n , %a_scriptdir%\checkcolor.log
 		reload
 	}
 
@@ -83,10 +93,12 @@ start(){
 	SetTitleMatchMode, 2
 	SetTitleMatchMode, 2
 	SetDefaultMouseSpeed , 0
-	
+	fileappend , a_linenumber %a_linenumber%`n , %a_scriptdir%\checkcolor.log
+
 	coordmode, mouse, relative
 	coordmode, pixel, relative
 	coordmode, tooltip, relative
+fileappend , a_linenumber %a_linenumber%`n , %a_scriptdir%\checkcolor.log
 
 	winmove, ahk_class AU3Reveal, , %Width%  , %Height% , , 
 
@@ -115,13 +127,22 @@ start(){
 
 	WinGet, ismax, minmax, %wintitle% ahk_exe RobloxPlayerBeta.exe
 
+	
 	ifwinactive , ahk_exe RobloxPlayerBeta.exe
 		inroblox()
+	
+	/*
 	if (ismax <> 1) 
 		reload
+	*/
 	
+	fileappend , a_linenumber %a_linenumber%`n , %a_scriptdir%\checkcolor.log
+
 	ifwinnotactive , ahk_exe RobloxPlayerBeta.exe
+	{
+		fileappend , a_linenumber %a_linenumber%`n , %a_scriptdir%\checkcolor.log
 		reload
+	}
 }
 
 inroblox(){
@@ -174,11 +195,10 @@ if ( checkpixel( checkx := 1151 , checky := 876 , checkRGB := 0x233371 )) ;
 	send {esc}
 } 
 */
-if ( checkpixel( checkx := 1887 , checky := 475 , checkRGB := 0x2A160D )) ; grayed speed control
-{
-	send {esc}
-} 
- 
+
+
+
+
 if ( checkpixel( checkx := 1806 , checky := 507 , checkRGB := 0x0C0D0B )) ; in nightmare battle
 {
 	MuseReliableClick(checkx, checky)
@@ -206,6 +226,76 @@ if ( checkpixel( checkx := 807 , checky := 433 , checkRGB := 0xFFD200 )) ; banne
 if ( checkpixel( checkx := 1879 , checky := 449 , checkRGB := 0x243300 )) ; deep grayed speed control
 {
 	send {esc}
+} 
+
+
+if ( checkpixel( checkx := 1887 , checky := 475 , checkRGB := 0x2A160D )) ; grayed speed control
+{
+	send {esc}
+} 
+ 
+ 
+if ( checkpixel( checkx := 755 , checky := 941 , checkRGB := 0xA82626 )) ; red VIP
+{
+mousemove,  862 , 885 ;  ready 
+	loop, 10
+	{
+		send {w down}{e down}
+		
+		if ( checkpixel( checkx := 863 , checky := 875 , checkRGB := 0x627D1B )) ; 
+		{
+			MuseReliableClick(checkx, checky)
+		}
+
+	PixelSearch , pixelX , pixelY , 860 ,  870  ,  870 , 880 , 0x627D1B , 1 , fast RGB ; relative 693 , 262 ; , Pcolor 0x779F0C PixelRGB 0x0C9F77 
+		if Errorlevel = 0 ; pixel is found
+		{
+			MuseReliableClick( pixelX , pixelY ) ; mouseclick , left , %pixelX% , %pixelY%
+		}
+		
+if ( checkpixel( checkx := 862 , checky := 885 , checkRGB := 0x537208 )) ; ready
+{
+	MuseReliableClick(checkx, checky)
+} 
+
+		PixelSearch , pixelX , pixelY , 860 ,  880  ,  870 , 890 , 0x537208 , 1 , fast RGB ; relative 693 , 262 ; , Pcolor 0x779F0C PixelRGB 0x0C9F77 
+		if Errorlevel = 0 ; pixel is found
+		{
+			MuseReliableClick( pixelX , pixelY ) ; mouseclick , left , %pixelX% , %pixelY%
+		}
+	
+		send {w up}{e up}
+	}
+	loop, 10
+	{
+		send {s down}{e down}
+		;mousemove,  863 , 875 ;  ready 
+		if ( checkpixel( checkx := 863 , checky := 875 , checkRGB := 0x627D1B )) ; ready
+		{
+			MuseReliableClick(checkx, checky)
+		}
+		PixelSearch , pixelX , pixelY , 860 ,  870  ,  870 , 880 , 0x627D1B , 1 , fast RGB ; ready
+		if Errorlevel = 0 ; pixel is found
+		{
+			MuseReliableClick( pixelX , pixelY ) ; mouseclick , left , %pixelX% , %pixelY%
+		}
+		
+		if ( checkpixel( checkx := 862 , checky := 885 , checkRGB := 0x537208 )) ; ready
+{
+	MuseReliableClick(checkx, checky)
+} 
+	PixelSearch , pixelX , pixelY , 860 ,  880  ,  870 , 890 , 0x537208 , 1 , fast RGB ; relative 693 , 262 ; , Pcolor 0x779F0C PixelRGB 0x0C9F77 
+		if Errorlevel = 0 ; pixel is found
+		{
+			MuseReliableClick( pixelX , pixelY ) ; mouseclick , left , %pixelX% , %pixelY%
+		}
+		
+		send {s up}{e up}
+	}
+	
+	
+
+	send {esc}r{enter}
 } 
 
 /*
@@ -344,66 +434,97 @@ if ( checkpixel( checkx := 426 , checky := 65 , checkRGB := 0x5A7F00 )) ; grayed
 	loop, 5
 	{
 		
-		MuseReliableClick(1406, 515, Left, 1) 
+		;MuseReliableClick(1406, 515, Left, 1) 
 		
+	if ( checkpixel( checkx := 796 , checky := 474 , checkRGB := 0x0001FF )) ; tower battles
+	{
+		MuseReliableClick(checkx, checky)
+	} 
+
+ 
+		/*
 		if ( checkpixel( checkx := 1184 , checky := 585 , checkRGB := 0xFFFFC1 )) ; halloween
 		{
 			MuseReliableClick(checkx, checky)
-		} 
+		}
+		*/ 
+
+if ( checkpixel( checkx := 1202 , checky := 301 , checkRGB := 0xAD00EF )) ; 
+{
+	checky := 301 + 50
+	MuseReliableClick(checkx, checky)
+} 
 
  
+mousemove,  1088 ,  481
 		if ( checkpixel( checkx := 1088 , checky := 481 , checkRGB := 0xFFFF20 )) ; events
 		{
 			MuseReliableClick(checkx, checky)
 		} 
+		
+		if ( checkpixel( checkx :=  1088, checky := 481 , checkRGB := 0xFFFF20 )) ; events
+		{
+			MuseReliableClick(checkx, checky)
+		} 
+		
+	PixelSearch , pixelX , pixelY , 1080 ,  480  ,  1090 , 490 , 0xFFFF20 , 0 , fast RGB ; events
+	if Errorlevel = 0 ; pixel is found
+	{
+				MuseReliableClick( pixelX , pixelY ) ; mouseclick , left , %pixelX% , %pixelY%
+	}
 
+
+		
+
+		/*
 		if ( checkpixel( checkx := 1271 , checky := 566 , checkRGB := 0xB06307 )) ;   halloween
 		{
 			MuseReliableClick(checkx, checky)
 			MuseReliableClick( 1075 ,  569 ) ; vote hard
-		} 
-
+		}
+		*/
 	}
 }
 
 if ( checkpixel( checkx := 870 , checky := 846 , checkRGB := 0x4E4E4E )) ;  gray ready gray
 {
 	MuseReliableClick(checkx, checky)
-	;MuseReliableClick(679, 416) ; vote casual
+	MuseReliableClick(550, 586) ; vote casual
+	MuseReliableClick(550, 586) ; vote casual
+	if ( checkpixel( checkx := 550 , checky := 586 , checkRGB := 0x030249 )) ; vote casual
+	{
+		MuseReliableClick(checkx, checky)
+	} 
+
 	;MuseReliableClick( 1266 , 554 ) ; vote nightmare
-	MuseReliableClick( 1041 , 488) ; vote hard
+	;MuseReliableClick( 1041 , 488) ; vote hard
 	MuseReliableClick(checkx, checky, Left, 1) 
 	MuseReliableClick(checkx, checky, Left, 2) 
 } 
- 
- 
- 
- if ( checkpixel( checkx := 1865 , checky := 471 , checkRGB := 0x284A00 ))  ; if ( checkpixel( checkx := 1865 , checky := 475 , checkRGB := 0x2A160D )) ; grayed speed control
+
+if ( checkpixel( checkx := 1865 , checky := 471 , checkRGB := 0x284A00 ))  ; grayed speed control if ( checkpixel( checkx := 1865 , checky := 475 , checkRGB := 0x2A160D )) ; grayed speed control
 {
-	;MuseReliableClick(679, 416)  ; casual
+	MuseReliableClick(550, 586)  ; casual
+	;MuseReliableClick(1052, 705) ; hard
 
-	MuseReliableClick(1052, 705) ; hard
- 
-
- 
 	if ( checkpixel( checkx := 1076 , checky := 841 , checkRGB := 0x0A7E19 )) ; green ready green
 	{
-		MuseReliableClick(1052, 705) ; hard
-		MuseReliableClick(1052, 705) ; hard
+		;MuseReliableClick(1052, 705) ; hard
+		;MuseReliableClick(1052, 705) ; hard
 		MuseReliableClick(checkx, checky)
 	} 
 	
 	if ( checkpixel( checkx := 981 , checky := 855 , checkRGB := 0xFFFFFF )) ; green ready green
 	{
-		MuseReliableClick(1052, 705) ; hard
-		MuseReliableClick(1052, 705) ; hard
+		;MuseReliableClick(1052, 705) ; hard
+		;MuseReliableClick(1052, 705) ; hard
 		MuseReliableClick(checkx, checky)
 	} 
 
 	if ( checkpixel( checkx := 1063 , checky := 844 , checkRGB := 0x0A7A18 )) ; green ready green
 	{
-		MuseReliableClick(1052, 705) ; hard
-		MuseReliableClick(1052, 705) ; hard
+		;MuseReliableClick(1052, 705) ; hard
+		;MuseReliableClick(1052, 705) ; hard
 		MuseReliableClick(checkx, checky)
 	} 
 
@@ -418,8 +539,8 @@ if ( checkpixel( checkx := 1887 , checky := 475 , checkRGB := 0x2A160D )) ; gray
 {
 	if ( checkpixel( checkx := 981 , checky := 855 , checkRGB := 0xFFFFFF )) ; green ready green
 	{
-		MuseReliableClick(1052, 705) ; hard
-		MuseReliableClick(1052, 705) ; hard
+		;MuseReliableClick(1052, 705) ; hard
+		;MuseReliableClick(1052, 705) ; hard
 		MuseReliableClick(checkx, checky)
 	} 
 } 
@@ -431,13 +552,15 @@ if ( checkpixel( checkx := 1075 , checky := 846 , checkRGB := 0x4D4D4D )) ; gray
 {
 	if ( checkpixel( checkx := 692 , checky := 368 , checkRGB := 0x0EAB21 )) ; vote casual 
 	{
-		;MuseReliableClick(checkx, checky)
+		MuseReliableClick(checkx, checky)
 	} 
 	
+	/*
 	if ( checkpixel( checkx := 1041 , checky := 488 , checkRGB := 0xEB5D01 )) ; vote hard
 	{
 		MuseReliableClick(checkx, checky)
 	} 
+	*/
  
 	if ( checkpixel( checkx := 1266 , checky := 554 , checkRGB := 0xF9E26D )) ; vote nightmare
 	{
@@ -536,6 +659,7 @@ if ( checkpixel( checkx := 872 , checky := 1534 , checkRGB := 0xB4FF00 )) ; spee
 
 
 send {esc}
+fileappend , a_linenumber %a_linenumber%`n , %a_scriptdir%\checkcolor.log
 reload
 
 if ( checkpixel( checkx := 655 , checky := 217 , checkRGB := 0xF35F4F ))  ; TDX game red X
@@ -557,6 +681,7 @@ if ( checkpixel( checkx := 655 , checky := 217 , checkRGB := 0xF35F4F ))  ; TDX 
 }
 
 sleep 20
+fileappend , a_linenumber %a_linenumber%`n , %a_scriptdir%\checkcolor.log
 reload
 
 
@@ -574,6 +699,7 @@ charposy := 525 ; 545
 	
 charposx := 974 
 charposy := 549 
+
  ;MouseClickDrag, Right, 1000, 500, 1000, 800, 3 ;overhead view
  ;MouseClickDrag, Right, 975, 249, 975, 549, 3 ;overhead view
  mousemove, %charposx% ,  %charposy%
@@ -616,6 +742,9 @@ charposy := 525 ; 545
 charposx := 974 
 charposy := 549 
 
+charposx := 967 
+charposy := 543 
+ 
 ShardX := 529 
 ShardY := 531 ;, Pcolor 0x436EA3 PixelRGB 0xA36E43  
 
@@ -670,7 +799,10 @@ checky = 161
 			mainloopindex := a_index
 			
 			if not WinActive("ahk_exe RobloxPlayerBeta.exe")
+			{
+				fileappend , a_linenumber %a_linenumber%`n , %a_scriptdir%\checkcolor.log
 				reload
+			}
 
 			/*
 			if WinActive("ahk_exe RobloxPlayerBeta.exe") 
@@ -777,7 +909,8 @@ checky = 161
 								return
 							if (quickcheckpixel(230 , 468, 0xB2FC00)) ; inventory backpack
 								return
-								
+							if (quickcheckpixel(755 , 941, 0xA82626)) ; red VIP
+								return	
 									testx = 41 
 									testy = 108 
 									testcolor = 0xF7F7F8
@@ -802,16 +935,18 @@ checky = 161
 								PixelSearch , pixelX , pixelY , 182 ,  695  ,  182 , 805 , 0xEEFFF5 , 1 , fast RGB ; relative 693 , 262 ; , Pcolor 0x779F0C PixelRGB 0x0C9F77 
 								if Errorlevel = 0 ; pixel is found
 								{
-									sendinput eereer ; rrerre ; eer ; rre
+									sendinput rre ; rrerre ; eer ; rre
 								}
 								*/
 								
-								sendinput eereer ; rrerre ; eer ; rre
+								sendinput rre ; rrerre ; eer ; rre
 							}	
 							
 							if (quickcheckpixel(41 , 108, 0xF7F7F8)) ; home button ; if ( checkpixel( checkx := 41 , checky := 108 , checkRGB := 0xF7F7F8 ))  ; home button 
 										return
 							if (quickcheckpixel(230 , 468, 0xB2FC00)) ; inventory backpack
+								return
+							if (quickcheckpixel(755 , 941, 0xA82626)) ; red VIP
 								return
 							Random, randnum, %randB% , %randB%
 							send %randnum%
@@ -819,9 +954,9 @@ checky = 161
 							{
 								Random, randX, %charposminX% , %charposmaxX%
 								Random, randY, %charposminY% , %charposmaxY%
-								sendinput eereer ; rrerre ; eer ; rre
+								sendinput rre ; rrerre ; eer ; rre
 								MuseReliableClick(randX, randY, button:="Left", count:=1, speed:=0, downOrUp:="", relative:="", hold:=20, wiggle:=false, debug:=false) ; MuseReliableClick(randx , randy)
-								sendinput eereer ; rrerre ; eer ; rre
+								sendinput rre ; rrerre ; eer ; rre
 							}	
 							send {ctrl up}
 							
@@ -832,16 +967,17 @@ checky = 161
 										return
 							if (quickcheckpixel(230 , 468, 0xB2FC00)) ; inventory backpack
 								return
-								
+							if (quickcheckpixel(755 , 941, 0xA82626)) ; red VIP
+								return
 								Random, randnum, %randC% , %randC%
 								send %randnum%
 								loop, 3
 								{
 									Random, randX, %charposminX% , %charposmaxX%
 									Random, randY, %charposminY% , %charposmaxY%
-									sendinput eereer ; rrerre ; eer ; rre
+									sendinput rre ; rrerre ; eer ; rre
 									MuseReliableClick(randX, randY, button:="Left", count:=1, speed:=0, downOrUp:="", relative:="", hold:=20, wiggle:=false, debug:=false) ; MuseReliableClick(randx , randy)
-									sendinput eereer ; rrerre ; eer ; rre
+									sendinput rre ; rrerre ; eer ; rre
 								}	
 								send {ctrl up}
 								
@@ -858,13 +994,19 @@ checky = 161
 
 							if (quickcheckpixel(230 , 468, 0xB2FC00)) ; inventory backpack
 								return
-
+							if (quickcheckpixel(755 , 941, 0xA82626)) ; red VIP
+								return
 
 if ( checkpixel( checkx := 230 , checky := 468 , checkRGB := 0xB2FC00 )) ; inventory backpack
 {
 	break
 }							
 	
+if ( checkpixel( checkx := 755 , checky := 941 , checkRGB := 0xA82626 )) ; red VIP
+{
+	break
+}							
+
 
 								;msgbox , %randX% , %randy%
 								; bottom path x-5  upgrade available  relative 301 , 803 ;, Pcolor 0x0D0D0D PixelRGB 0x0D0D0D  
@@ -881,10 +1023,10 @@ if ( checkpixel( checkx := 230 , checky := 468 , checkRGB := 0xB2FC00 )) ; inven
 								return	
 							send q{ctrl down} ; {click %ShardX% , %ShardY% left 2}{click 305 , 652 left 5}{click 215 , 689 left 1} ; {click 306 , 638 left 1}							
 							MuseReliableClick(1038, 172) ; skip wave
-							minX := charposx - 50 ; 476 ;600; 400 ; 500
-							minY := charposy - 50  ; 300
-							maxX := charposx + 50 ; 1700 ; 1000 ; 1500 
-							maxY := charposy + 50 ; 800 ; 900
+							minX := charposx - 75 ; 476 ;600; 400 ; 500
+							minY := charposy - 75  ; 300
+							maxX := charposx + 175 ; 1700 ; 1000 ; 1500 
+							maxY := charposy + 75 ; 800 ; 900
 					
 							loop, 8
 							{
@@ -893,9 +1035,9 @@ if ( checkpixel( checkx := 230 , checky := 468 , checkRGB := 0xB2FC00 )) ; inven
 
 								Random, randX, %minx% , %maxx%
 								Random, randY, %miny% , %maxy%
-								sendinput eereer ; rrerre ; eer ; rre
+								sendinput rre ; rrerre ; eer ; rre
 								MuseReliableClick(randx, randy, button:="Left", count:=1, speed:=0, downOrUp:="", relative:="", hold:=20, wiggle:=false, debug:=false) ; MuseReliableClick(randx , randy)
-								sendinput eereer ; rrerre ; eer ; rre
+								sendinput rre ; rrerre ; eer ; rre
 								;MuseReliableClick(charposx , charposy)
 								; bottom path x-5  upgrade available  relative 301 , 803 ;, Pcolor 0x0D0D0D PixelRGB 0x0D0D0D  
 								; top path x-2 upgrade available  relative 215 , 689 ;, Pcolor 0x0D0D0D PixelRGB 0x0D0D0D  
@@ -905,10 +1047,10 @@ if ( checkpixel( checkx := 230 , checky := 468 , checkRGB := 0xB2FC00 )) ; inven
 								PixelSearch , pixelX , pixelY , 182 ,  695  ,  182 , 805 , 0xEEFFF5 , 1 , fast RGB ; relative 693 , 262 ; , Pcolor 0x779F0C PixelRGB 0x0C9F77 
 								if Errorlevel = 0 ; pixel is found
 								{
-									sendinput eereer ; rrerre ; eer ; rre
+									sendinput rre ; rrerre ; eer ; rre
 								}
 								*/
-								sendinput eereer ; rrerre ; eer ; rre
+								sendinput rre ; rrerre ; eer ; rre
 								
 							}	 
 							
@@ -916,8 +1058,31 @@ if ( checkpixel( checkx := 230 , checky := 468 , checkRGB := 0xB2FC00 )) ; inven
 								return
 							if (quickcheckpixel(230 , 468, 0xB2FC00)) ; inventory backpack
 								return
+							if (quickcheckpixel(755 , 941, 0xA82626)) ; red VIP
+								return
 							loop,2
 							{
+								send {ctrl down}
+								Random, randnum, %randA% , %randA%
+								send %randnum%
+			
+								loop, 3 
+								{
+									Random, randX, %charposminX% , %charposmaxX%
+									Random, randY, %charposminY% , %charposmaxY%
+
+									MuseReliableClick(randX, randY, button:="Left", count:=1, speed:=0, downOrUp:="", relative:="", hold:=20, wiggle:=false, debug:=false) ; MuseReliableClick(randx , randy)
+									/*
+									PixelSearch , pixelX , pixelY , 182 ,  695  ,  182 , 805 , 0xEEFFF5 , 1 , fast RGB ; relative 693 , 262 ; , Pcolor 0x779F0C PixelRGB 0x0C9F77 
+									if Errorlevel = 0 ; pixel is found
+									{
+										sendinput rre ; rrerre ; eer ; rre
+									}
+									*/
+									
+									sendinput rre ; rrerre ; eer ; rre
+								}	
+							
 								Random, randnum, %randDmin%, %randDmax%
 								send %randnum%
 								
@@ -927,17 +1092,17 @@ if ( checkpixel( checkx := 230 , checky := 468 , checkRGB := 0xB2FC00 )) ; inven
 										break
 									Random, randX, %minx% , %maxx%
 									Random, randY, %miny% , %maxy%
-									sendinput eereer ; rrerre
+									sendinput rre ; rrerre
 									MuseReliableClick(randx, randy, button:="Left", count:=1, speed:=0, downOrUp:="", relative:="", hold:=20, wiggle:=false, debug:=false) ; MuseReliableClick(randx , randy)
 									/*
 									PixelSearch , pixelX , pixelY , 182 ,  695  ,  182 , 805 , 0xEEFFF5 , 1 , fast RGB ; relative 693 , 262 ; , Pcolor 0x779F0C PixelRGB 0x0C9F77 
 									if Errorlevel = 0 ; pixel is found
 									{
-									sendinput eereer ; rrerre ; eer ; rre
+									sendinput rre ; rrerre ; eer ; rre
 									}
 								*/
 								
-								sendinput eereer ; rrerre ; eer ; rre
+								sendinput rre ; rrerre ; eer ; rre
 								}	 
 							}
 								send q{ctrl up}
@@ -1051,7 +1216,7 @@ if ( checkpixel( checkx := 230 , checky := 468 , checkRGB := 0xB2FC00 )) ; inven
 				if WinActive("ahk_exe RobloxPlayerBeta.exe") 
 				{
 					;send {click 306 , 746 left 2}{click 306 , 638 left 1}6{click %mouseminX% , %mousemaxY% left 2}{click 306 , 746 left 2}{click 306 , 638 left 1}
-					send {left}
+					;send {left}
 					if WinActive("ahk_exe RobloxPlayerBeta.exe") 
 						send {click 1893 , 448 left 1} ; open speed control
 					if WinActive("ahk_exe RobloxPlayerBeta.exe") 
@@ -1062,7 +1227,8 @@ if ( checkpixel( checkx := 230 , checky := 468 , checkRGB := 0xB2FC00 )) ; inven
 						send {click 1194 , 766 left 1} ; return to lobby
 					if WinActive("ahk_exe RobloxPlayerBeta.exe") 
 						send {click 1202 , 384 left 3} ;close speed control
-					send {left}q
+					;send {left}q
+					send q
 
 					/*
 					checkx = 194
@@ -1287,7 +1453,7 @@ if ( checkpixel( checkx := 957 , checky := 780 , checkRGB := 0xDDFFC8 )) ; retur
 ; MouseClick: MouseClick, Button, X, Y, ClickCount, Speed, DownOrUp, Relative
 ; hold / wiggle / debug are extras, at the end so old calls still work
 
-MuseReliableClick(x, y, button:="Left", count:=1, speed:=0, downOrUp:="", relative:="", hold:=40, wiggle:=false, debug:=false) {
+MuseReliableClick(x, y, button:="Left", count:=1, speed:=0, downOrUp:="", relative:="", hold:=40, wiggle:=false, triggerline:=false , debug:=false) {
     
 	if !WinActive("ahk_exe RobloxPlayerBeta.exe")
     {
@@ -1384,7 +1550,7 @@ MuseReliableClick(x, y, button:="Left", count:=1, speed:=0, downOrUp:="", relati
 									PixelSearch , pixelX , pixelY , 182 ,  695  ,  182 , 805 , 0xEEFFF5 , 1 , fast RGB ; relative 693 , 262 ; , Pcolor 0x779F0C PixelRGB 0x0C9F77 
 									if Errorlevel = 0 ; pixel is found
 									{
-										sendinput eereer ; rrerre ; eer ; rre
+										sendinput rre ; rrerre ; eer ; rre
 										msgbox  , , , send rre  , 0.1
 									}
 							*/
@@ -1393,7 +1559,7 @@ MuseReliableClick(x, y, button:="Left", count:=1, speed:=0, downOrUp:="", relati
 									PixelSearch , pixelX , pixelY , 278 ,  654  ,  278 , 805 , 0xA2C600 , 1 , fast RGB ; relative 693 , 262 ; , Pcolor 0x779F0C PixelRGB 0x0C9F77 
 									if Errorlevel = 0 ; pixel is found
 									{
-										sendinput eereer ; rrerre ; eer ; rre
+										sendinput rre ; rrerre ; eer ; rre
 										msgbox  , , , send rre  , 0.5
 									}
 							*/
@@ -1401,14 +1567,14 @@ MuseReliableClick(x, y, button:="Left", count:=1, speed:=0, downOrUp:="", relati
 									PixelSearch , pixelX , pixelY ,  298 ,  653  ,  298 , 805 , 0x030400 , 1 , fast RGB ; relative 693 , 262 ; , Pcolor 0x779F0C PixelRGB 0x0C9F77 
 									if Errorlevel = 0 ; pixel is found
 									{
-										sendinput eereer ; rrerre ; eer ; rre
+										sendinput rre ; rrerre ; eer ; rre
 										msgbox  , , , send rre  , 0.5
 									}
 							*/
 									PixelSearch , pixelX , pixelY ,  301 ,  691  ,  301 , 805 , 0x0D0D0D , 10 , fast RGB ; relative 693 , 262 ; , Pcolor 0x779F0C PixelRGB 0x0C9F77 
 									if Errorlevel = 0 ; pixel is found
 									{
-										sendinput eereer ; rrerre ; eer ; rre
+										sendinput rre ; rrerre ; eer ; rre
 										send rre
 										;msgbox  , , , send rre  , 0.5
 									}
@@ -1444,14 +1610,11 @@ MuseReliableClick(x, y, button:="Left", count:=1, speed:=0, downOrUp:="", relati
         MsgBox, , , % "x " . x . " y " . y . " button " . button . " count " . count, 
 }
 
-
-send {esc}
-reload
 exitapp
 
 
 $!esc::
-;$+esc::
+$+esc::
 $#esc::
 
 soundBeep , 2500, 125
